@@ -341,6 +341,7 @@ function handleTap(px, py) {
   }
 }
 
+canvas = $('game-canvas');
 canvas.addEventListener('touchstart', e => {
   e.preventDefault();
   for (const t of e.changedTouches) {
@@ -427,7 +428,6 @@ $('btn-start').addEventListener('click', () => {
   startGame();
 });
 
-canvas = $('game-canvas');
 loadAssets();
 </script>
 </body>
