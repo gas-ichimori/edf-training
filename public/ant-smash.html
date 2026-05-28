@@ -63,7 +63,7 @@ body::after {
 
 /* ===== GAME ===== */
 #screen-game {
-  background: #040d04;
+  background: url('/ant_bg.png') center/cover no-repeat;
   justify-content: flex-start;
 }
 #hud {
@@ -84,7 +84,7 @@ body::after {
 }
 #hud-time.urgent { color: #ff4444; animation: time-blink 0.4s ease infinite; }
 @keyframes time-blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-#game-canvas { flex: 1; width: 100%; display: block; touch-action: none; }
+#game-canvas { flex: 1; width: 100%; display: block; touch-action: none; background: transparent; }
 
 /* ===== RESULT ===== */
 #screen-result {
