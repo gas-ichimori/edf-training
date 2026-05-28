@@ -262,6 +262,19 @@ function playStart() {
   } catch(e) {}
 }
 
+function playBtnClick() {
+  try {
+    const ac = getAudio();
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.connect(gain); gain.connect(ac.destination);
+    osc.type = 'sine'; osc.frequency.setValueAtTime(660, ac.currentTime);
+    gain.gain.setValueAtTime(0.15, ac.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.08);
+    osc.start(); osc.stop(ac.currentTime + 0.08);
+  } catch(e) {}
+}
+
 // ===== SPEECH =====
 function speakTaisa(text) {
   if (!window.speechSynthesis) return;
@@ -386,6 +399,7 @@ function showResult() {
 
 // ===== BUTTONS =====
 $('btn-share').addEventListener('click', async () => {
+  playBtnClick();
   if (!navigator.share) { alert('このブラウザはシェア機能に対応していません'); return; }
   try {
     await navigator.share({
@@ -395,8 +409,8 @@ $('btn-share').addEventListener('click', async () => {
   } catch(e) {}
 });
 
-$('btn-retry').addEventListener('click', () => startGame());
-$('btn-hub').addEventListener('click', () => { window.location.href = '/'; });
+$('btn-retry').addEventListener('click', () => { playBtnClick(); startGame(); });
+$('btn-hub').addEventListener('click', () => { playBtnClick(); window.location.href = '/'; });
 
 // ===== START =====
 function startGame() {
@@ -425,11 +439,12 @@ function startGame() {
 }
 
 $('btn-start').addEventListener('click', () => {
-  // iOS speech unlock
   if (window.speechSynthesis) window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+  playBtnClick();
   playStart();
   startGame();
 });
+document.querySelector('#screen-start .btn-hub-result').addEventListener('click', () => { playBtnClick(); });
 
 loadAssets();
 </script>

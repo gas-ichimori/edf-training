@@ -122,6 +122,22 @@ body::after {
 #game-hint {
   font-size: 12px; letter-spacing: 3px; color: rgba(255,255,255,0.3);
 }
+#game-go-text.counting {
+  animation: count-pop 0.85s ease forwards !important;
+  font-size: 88px;
+  color: #fff;
+  text-shadow: 0 0 30px rgba(255,255,255,0.6);
+}
+@keyframes count-pop {
+  0%   { transform: scale(2.2); opacity: 0; }
+  20%  { transform: scale(1);   opacity: 1; }
+  75%  { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(0.6); opacity: 0; }
+}
+#btn-stop.disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
 
 /* ===== RESULT ===== */
 #screen-result {
@@ -288,7 +304,9 @@ function playBeep(freq, dur, type = 'square') {
     osc.start(); osc.stop(ac.currentTime + dur);
   } catch(e) {}
 }
-function playStart() { playBeep(880, 0.2); }
+function playBtnClick() { playBeep(660, 0.08, 'sine'); }
+function playCountBeep(n) { playBeep(n === 1 ? 880 : 550, 0.12); }
+function playStart() { playBeep(880, 0.25); }
 function playStop() {
   try {
     const ac = getAudio();
@@ -341,14 +359,41 @@ function typeMessage(el, text, cb) {
 
 // ===== GAME =====
 function startGame() {
-  playStart();
-  // iOS speech unlock
-  if (window.speechSynthesis) {
-    window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
-  }
-  isRunning = true;
-  startTime = performance.now();
+  playBtnClick();
+  if (window.speechSynthesis) window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+  isRunning = false;
   showScreen('screen-game');
+
+  const goText = $('game-go-text');
+  const stopBtn = $('btn-stop');
+  stopBtn.classList.add('disabled');
+  goText.classList.remove('counting');
+
+  let count = 3;
+  goText.textContent = count;
+  void goText.offsetWidth;
+  goText.classList.add('counting');
+  playCountBeep(count);
+
+  const tick = setInterval(() => {
+    count--;
+    if (count > 0) {
+      goText.classList.remove('counting');
+      void goText.offsetWidth;
+      goText.textContent = count;
+      goText.classList.add('counting');
+      playCountBeep(count);
+    } else {
+      clearInterval(tick);
+      goText.classList.remove('counting');
+      void goText.offsetWidth;
+      goText.textContent = 'GO!';
+      stopBtn.classList.remove('disabled');
+      isRunning = true;
+      startTime = performance.now();
+      playStart();
+    }
+  }, 1000);
 }
 
 function stopGame() {
@@ -357,6 +402,7 @@ function stopGame() {
   const elapsed = (performance.now() - startTime) / 1000;
   resultMs = Math.round(elapsed * 1000) / 1000;
   playStop();
+  $('btn-stop').classList.add('disabled');
   showResult(resultMs);
 }
 
@@ -399,6 +445,7 @@ $('btn-stop').addEventListener('click', () => { stopGame(); });
 $('btn-stop').addEventListener('touchstart', e => { e.preventDefault(); stopGame(); }, { passive: false });
 
 $('btn-share').addEventListener('click', () => {
+  playBtnClick();
   const t = resultMs.toFixed(3);
   const text = `【訓練③10秒チャレンジ】${t}秒！（目標10.000秒） #EDF訓練 #TGS2026`;
   if (navigator.share) {
@@ -410,11 +457,15 @@ $('btn-share').addEventListener('click', () => {
 });
 
 $('btn-retry').addEventListener('click', () => {
+  playBtnClick();
   $('result-score-box').classList.remove('cleared');
   showScreen('screen-start');
 });
 
-$('btn-hub').addEventListener('click', () => { location.href = '/'; });
+$('btn-hub').addEventListener('click', () => { playBtnClick(); location.href = '/'; });
+
+// ハブに戻るボタン（スタート画面）
+document.querySelector('#screen-start .btn-hub-result').addEventListener('click', () => { playBtnClick(); });
 </script>
 </body>
 </html>

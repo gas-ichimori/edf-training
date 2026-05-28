@@ -220,6 +220,26 @@ body::after {
 </div>
 
 <script>
+// ボタンクリック音
+let audioCtx = null;
+function playBtnClick() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = 'sine'; osc.frequency.setValueAtTime(660, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+  } catch(e) {}
+}
+document.querySelectorAll('.training-btn').forEach(btn => {
+  btn.addEventListener('click', () => playBtnClick());
+  btn.addEventListener('touchstart', () => playBtnClick(), { passive: true });
+});
+
 // 大佐ボイス（ページロード時）
 function speakTaisa(text) {
   if (!window.speechSynthesis) return;

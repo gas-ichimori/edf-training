@@ -1002,11 +1002,13 @@ $('btn-share').addEventListener('click', function() {
 });
 
 $('btn-retry').addEventListener('click', () => {
+  playTypeClick();
   $('gameover-screen').style.display = 'none';
   onStartPress();
 });
 
 $('btn-hub').addEventListener('click', () => {
+  playTypeClick();
   window.location.href = '/';
 });
 </script>
