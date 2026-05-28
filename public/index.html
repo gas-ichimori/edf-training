@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>EDF 訓練システム</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=M+PLUS+1p:wght@800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%;
+  background: #07100a;
+  color: #dff0d0;
+  font-family: 'M PLUS 1p', sans-serif;
+  font-weight: 800;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);
+  pointer-events: none;
+  z-index: 999;
+}
+
+#bg {
+  position: fixed; inset: 0;
+  background: url('/top_bg.png') center/cover no-repeat;
+  z-index: 0;
+}
+#bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.65);
+}
+
+#main {
+  position: fixed; inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 20px 32px;
+}
+
+/* ヘッダー */
+.header {
+  width: 100%;
+  text-align: center;
+}
+.header-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10px;
+  letter-spacing: 5px;
+  color: rgba(136,255,85,0.7);
+  margin-bottom: 4px;
+}
+.header-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(136,255,85,0.4);
+}
+.header-sub {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: rgba(136,255,85,0.5);
+  margin-top: 4px;
+}
+
+/* 大佐エリア */
+.taisa-area {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  min-height: 0;
+}
+.speech-bubble {
+  background: rgba(0,0,0,0.85);
+  border: 2px solid rgba(136,255,85,0.6);
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 10px;
+  max-width: 280px;
+  position: relative;
+  text-align: center;
+}
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -12px; left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(136,255,85,0.6);
+}
+.speech-main {
+  font-size: 17px;
+  letter-spacing: 2px;
+  color: #fff;
+  line-height: 1.7;
+}
+.speech-sub {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: rgba(136,255,85,0.8);
+  margin-top: 4px;
+}
+#taisa-img {
+  height: 36vh;
+  max-height: 260px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 16px rgba(136,255,85,0.2));
+}
+
+/* 訓練ボタン */
+.training-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.training-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(0,20,0,0.8);
+  border: 2px solid rgba(136,255,85,0.35);
+  border-radius: 8px;
+  padding: 14px 18px;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.training-btn:active {
+  background: rgba(136,255,85,0.1);
+  border-color: rgba(136,255,85,0.8);
+}
+.training-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: rgba(136,255,85,0.8);
+  min-width: 32px;
+  text-align: center;
+}
+.training-info { flex: 1; }
+.training-name {
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: #fff;
+}
+.training-desc {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: rgba(136,255,85,0.5);
+  margin-top: 2px;
+}
+.training-arrow {
+  font-size: 18px;
+  color: rgba(136,255,85,0.5);
+}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div id="main">
+
+  <div class="header">
+    <div class="header-label">EARTH DEFENSE FORCE</div>
+    <div class="header-title">EDF 訓練システム</div>
+    <div class="header-sub">TRAINING SYSTEM v1.0</div>
+  </div>
+
+  <div class="taisa-area">
+    <div class="speech-bubble">
+      <div class="speech-main">集合しろ！クズども！並べ！</div>
+      <div class="speech-sub">待機の間も訓練を怠るな！</div>
+    </div>
+    <img id="taisa-img" src="/taisa.png" alt="大佐">
+  </div>
+
+  <div class="training-list">
+    <a class="training-btn" href="/runner.html">
+      <div class="training-num">①</div>
+      <div class="training-info">
+        <div class="training-name">ランナー訓練</div>
+        <div class="training-desc">蟻を避けてスコアを稼げ</div>
+      </div>
+      <div class="training-arrow">▶</div>
+    </a>
+    <a class="training-btn" href="/ant-smash.html">
+      <div class="training-num">②</div>
+      <div class="training-info">
+        <div class="training-name">蟻殲滅訓練</div>
+        <div class="training-desc">30秒で何匹タップできるか</div>
+      </div>
+      <div class="training-arrow">▶</div>
+    </a>
+    <a class="training-btn" href="/ten-second.html">
+      <div class="training-num">③</div>
+      <div class="training-info">
+        <div class="training-name">10秒チャレンジ</div>
+        <div class="training-desc">ピッタリ10秒で止めろ</div>
+      </div>
+      <div class="training-arrow">▶</div>
+    </a>
+  </div>
+
+</div>
+
+<script>
+// 大佐ボイス（ページロード時）
+function speakTaisa(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ja-JP'; u.pitch = 0.75; u.rate = 0.9; u.volume = 1;
+  window.speechSynthesis.speak(u);
+}
+
+// iOS解禁: 最初のタップで音声解禁 + 大佐セリフ
+let spoken = false;
+document.addEventListener('touchstart', () => {
+  if (spoken) return; spoken = true;
+  speakTaisa('集合しろ！クズども！並べ！待機の間も訓練を怠るな！');
+}, { once: false });
+document.addEventListener('click', () => {
+  if (spoken) return; spoken = true;
+  speakTaisa('集合しろ！クズども！並べ！待機の間も訓練を怠るな！');
+}, { once: false });
+</script>
+</body>
+</html>

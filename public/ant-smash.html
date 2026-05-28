@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>EDF訓練② 蟻殲滅</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=M+PLUS+1p:wght@800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%;
+  background: #07100a;
+  color: #dff0d0;
+  font-family: 'M PLUS 1p', sans-serif;
+  font-weight: 800;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; }
+.screen.active { display: flex; }
+
+/* ===== START ===== */
+#screen-start {
+  background: radial-gradient(ellipse at center, #0d1f0d 0%, #050d05 70%);
+  gap: 24px; padding: 40px 24px; text-align: center;
+}
+.start-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px; letter-spacing: 5px; color: rgba(136,255,85,0.6);
+}
+.start-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 26px; font-weight: 900; letter-spacing: 3px; color: #fff;
+  text-shadow: 0 0 20px rgba(136,255,85,0.4);
+}
+.start-rule {
+  font-size: 14px; letter-spacing: 2px; color: rgba(136,255,85,0.7);
+  line-height: 1.9;
+}
+.clear-hint {
+  font-size: 12px; color: rgba(255,200,50,0.7); letter-spacing: 2px;
+}
+.btn-go {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px; font-weight: 700; letter-spacing: 5px;
+  background: rgba(136,255,85,0.15);
+  border: 2px solid rgba(136,255,85,0.7);
+  color: #88ff55; padding: 18px 44px; cursor: pointer; border-radius: 4px;
+  box-shadow: 0 0 24px rgba(136,255,85,0.3);
+  transition: transform 0.1s;
+}
+.btn-go:active { transform: scale(0.95); }
+
+/* ===== GAME ===== */
+#screen-game {
+  background: #040d04;
+  justify-content: flex-start;
+}
+#hud {
+  width: 100%; display: flex; justify-content: space-between;
+  align-items: center; padding: 16px 20px 10px;
+  background: rgba(0,0,0,0.5);
+  border-bottom: 1px solid rgba(136,255,85,0.2);
+  flex-shrink: 0;
+}
+#hud-score {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px; font-weight: 900; color: #88ff55;
+  text-shadow: 0 0 10px rgba(136,255,85,0.5);
+}
+#hud-time {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px; font-weight: 900; color: #fff;
+}
+#hud-time.urgent { color: #ff4444; animation: time-blink 0.4s ease infinite; }
+@keyframes time-blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+#game-canvas { flex: 1; width: 100%; display: block; touch-action: none; }
+
+/* ===== RESULT ===== */
+#screen-result {
+  background: url('/top_bg.png') center/cover no-repeat;
+  justify-content: flex-end;
+}
+#screen-result::before {
+  content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.6);
+}
+#result-taisa {
+  position: absolute; bottom: 0; left: 0;
+  height: 72vh; object-fit: contain;
+  z-index: 1;
+}
+#result-content {
+  position: relative; z-index: 2;
+  width: 100%; padding: 0 20px 40px;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 16px;
+}
+#result-score-box {
+  background: rgba(0,0,0,0.8);
+  border: 2px solid rgba(136,255,85,0.5);
+  border-radius: 8px; padding: 14px 20px; text-align: center; width: 100%;
+}
+.result-score-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10px; letter-spacing: 4px; color: rgba(136,255,85,0.6);
+}
+.result-score-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 44px; font-weight: 900; color: #88ff55;
+  text-shadow: 0 0 20px rgba(136,255,85,0.6);
+}
+.result-score-unit { font-size: 16px; color: rgba(136,255,85,0.6); }
+#result-message {
+  font-size: 17px; letter-spacing: 2px; color: #fff;
+  text-align: right; line-height: 1.8;
+  white-space: pre-line;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  min-height: 60px;
+}
+.result-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.result-btn {
+  font-family: 'M PLUS 1p', sans-serif; font-weight: 800;
+  font-size: 15px; letter-spacing: 3px;
+  padding: 16px; border-radius: 6px; cursor: pointer;
+  transition: transform 0.1s;
+}
+.result-btn:active { transform: scale(0.97); }
+.btn-share-result {
+  background: rgba(136,255,85,0.15);
+  border: 2px solid rgba(136,255,85,0.7);
+  color: #88ff55;
+}
+.btn-retry-result {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #aaa;
+}
+.btn-hub-result {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #666;
+}
+</style>
+</head>
+<body>
+
+<!-- START -->
+<div id="screen-start" class="screen active">
+  <div class="start-num">TRAINING — 02</div>
+  <div class="start-title">蟻 殲 滅</div>
+  <div class="start-rule">
+    画面に現れる蟻をタップで潰せ！<br>
+    30秒で何匹倒せるか！
+  </div>
+  <div class="clear-hint">▶ 40匹以上でクリア</div>
+  <button class="btn-go" id="btn-start">▶ 訓練開始</button>
+  <button class="btn-hub-result" style="margin-top:8px;padding:10px 24px;border-radius:4px;cursor:pointer;font-size:12px;letter-spacing:2px;" onclick="location.href='/'">← 訓練ハブ</button>
+</div>
+
+<!-- GAME -->
+<div id="screen-game" class="screen">
+  <div id="hud">
+    <div id="hud-score">0 匹</div>
+    <div id="hud-time">30</div>
+  </div>
+  <canvas id="game-canvas"></canvas>
+</div>
+
+<!-- RESULT -->
+<div id="screen-result" class="screen">
+  <img id="result-taisa" src="/taisa.png" alt="大佐">
+  <div id="result-content">
+    <div id="result-score-box">
+      <div class="result-score-label">KILL COUNT</div>
+      <div><span class="result-score-num" id="result-num">0</span><span class="result-score-unit"> 匹</span></div>
+    </div>
+    <div id="result-message"></div>
+    <div class="result-btns">
+      <button class="result-btn btn-share-result" id="btn-share">仲間を鍛える【シェア】</button>
+      <button class="result-btn btn-retry-result" id="btn-retry">もう一度訓練する</button>
+      <button class="result-btn btn-hub-result" id="btn-hub">訓練ハブに戻る</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CLEAR_COUNT = 40;
+const GAME_TIME   = 30;
+
+let score = 0;
+let timeLeft = GAME_TIME;
+let timerInterval = null;
+let ants = [];
+let antFrameIdx = 0;
+let antFrameTimer = 0;
+let spawnTimer = null;
+let rafId = null;
+let canvas, ctx, W, H;
+
+const ANT_SIZE = 64;
+const ANT_FRAME_MS = 120;
+
+const $ = id => document.getElementById(id);
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+
+// ===== ASSETS =====
+const antImgs = [];
+function loadAssets() {
+  return Promise.all([1,2,3,4].map((i, idx) => new Promise(r => {
+    const img = new Image();
+    img.onload = r;
+    img.src = `/ant${i}.png`;
+    antImgs[idx] = img;
+  })));
+}
+
+// ===== AUDIO =====
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function playSmash() {
+  try {
+    const ac = getAudio();
+    const buf = ac.createBuffer(1, ac.sampleRate * 0.06, ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ac.sampleRate * 0.015));
+    const src = ac.createBufferSource();
+    const gain = ac.createGain();
+    src.buffer = buf; src.connect(gain); gain.connect(ac.destination);
+    gain.gain.setValueAtTime(0.5, ac.currentTime);
+    src.start();
+  } catch(e) {}
+}
+function playStart() {
+  try {
+    const ac = getAudio();
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.connect(gain); gain.connect(ac.destination);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(220, ac.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, ac.currentTime + 0.18);
+    gain.gain.setValueAtTime(0.2, ac.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.25);
+    osc.start(); osc.stop(ac.currentTime + 0.25);
+  } catch(e) {}
+}
+
+// ===== SPEECH =====
+function speakTaisa(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ja-JP'; u.pitch = 0.75; u.rate = 0.9;
+  window.speechSynthesis.speak(u);
+}
+
+// ===== SPAWN =====
+function spawnAnt() {
+  const margin = ANT_SIZE;
+  const x = margin + Math.random() * (W - margin * 2);
+  const y = margin + Math.random() * (H - margin * 2);
+  ants.push({ x, y, life: 1500 + Math.random() * 500, born: performance.now() });
+}
+
+function getSpawnInterval() {
+  if (timeLeft > 20) return 900;
+  if (timeLeft > 10) return 600;
+  return 420;
+}
+
+function scheduleSpawn() {
+  spawnTimer = setTimeout(() => {
+    if (timeLeft <= 0) return;
+    // 複数同時spawn
+    const count = timeLeft > 20 ? 1 : timeLeft > 10 ? 2 : 3;
+    for (let i = 0; i < count; i++) spawnAnt();
+    scheduleSpawn();
+  }, getSpawnInterval());
+}
+
+// ===== DRAW =====
+function draw(now) {
+  ctx.clearRect(0, 0, W, H);
+
+  antFrameTimer += 16;
+  if (antFrameTimer >= ANT_FRAME_MS) {
+    antFrameTimer = 0;
+    antFrameIdx = (antFrameIdx + 1) % 4;
+  }
+
+  const img = antImgs[antFrameIdx];
+
+  // 蟻を描画・古い蟻を削除
+  ants = ants.filter(a => {
+    const age = now - a.born;
+    if (age > a.life) return false;
+    const alpha = age > a.life - 300 ? (a.life - age) / 300 : 1;
+    ctx.globalAlpha = alpha;
+    if (img) {
+      ctx.drawImage(img, a.x - ANT_SIZE/2, a.y - ANT_SIZE/2, ANT_SIZE, ANT_SIZE);
+    } else {
+      ctx.fillStyle = '#88ff55';
+      ctx.fillRect(a.x - 20, a.y - 20, 40, 40);
+    }
+    ctx.globalAlpha = 1;
+    return true;
+  });
+
+  rafId = requestAnimationFrame(draw);
+}
+
+// ===== HIT TEST =====
+function handleTap(px, py) {
+  for (let i = ants.length - 1; i >= 0; i--) {
+    const a = ants[i];
+    const dist = Math.hypot(px - a.x, py - a.y);
+    if (dist < ANT_SIZE * 0.7) {
+      ants.splice(i, 1);
+      score++;
+      $('hud-score').textContent = `${score} 匹`;
+      playSmash();
+      return;
+    }
+  }
+}
+
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    const r = canvas.getBoundingClientRect();
+    handleTap(t.clientX - r.left, t.clientY - r.top);
+  }
+}, { passive: false });
+canvas.addEventListener('mousedown', e => {
+  const r = canvas.getBoundingClientRect();
+  handleTap(e.clientX - r.left, e.clientY - r.top);
+});
+
+// ===== TIMER =====
+function startTimer() {
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    $('hud-time').textContent = timeLeft;
+    if (timeLeft <= 5) $('hud-time').classList.add('urgent');
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      clearTimeout(spawnTimer);
+      cancelAnimationFrame(rafId);
+      setTimeout(showResult, 300);
+    }
+  }, 1000);
+}
+
+// ===== RESULT =====
+function showResult() {
+  const cleared = score >= CLEAR_COUNT;
+  $('result-num').textContent = score;
+  showScreen('screen-result');
+
+  if (cleared) {
+    $('result-message').textContent = 'や...やるな...\nまた訓練に来い！';
+    speakTaisa('や・・・やるな・・・また訓練に来い！');
+  } else {
+    $('result-message').textContent = 'こんなコトも出来ないのか！\n知人・友人にも広めて鍛えておけ！';
+    speakTaisa('こんなことも出来ないのか！ちじん・ゆうじんにも広めて、きたえておけ！');
+  }
+}
+
+// ===== BUTTONS =====
+$('btn-share').addEventListener('click', async () => {
+  if (!navigator.share) { alert('このブラウザはシェア機能に対応していません'); return; }
+  try {
+    await navigator.share({
+      title: 'EDF訓練',
+      text: `【訓練②蟻殲滅】${score}匹撃破！${score >= CLEAR_COUNT ? 'クリア！' : ''}  #EDF訓練 #TGS2026`
+    });
+  } catch(e) {}
+});
+
+$('btn-retry').addEventListener('click', () => startGame());
+$('btn-hub').addEventListener('click', () => { window.location.href = '/'; });
+
+// ===== START =====
+function startGame() {
+  score = 0; timeLeft = GAME_TIME; ants = [];
+  antFrameIdx = 0; antFrameTimer = 0;
+  $('hud-score').textContent = '0 匹';
+  $('hud-time').textContent = GAME_TIME;
+  $('hud-time').classList.remove('urgent');
+
+  canvas = $('game-canvas');
+  W = canvas.width  = canvas.offsetWidth;
+  H = canvas.height = canvas.offsetHeight;
+  ctx = canvas.getContext('2d');
+
+  clearTimeout(spawnTimer);
+  cancelAnimationFrame(rafId);
+
+  showScreen('screen-game');
+  spawnAnt(); spawnAnt();
+  scheduleSpawn();
+  startTimer();
+  rafId = requestAnimationFrame(draw);
+}
+
+$('btn-start').addEventListener('click', () => {
+  // iOS speech unlock
+  if (window.speechSynthesis) window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+  playStart();
+  startGame();
+});
+
+canvas = $('game-canvas');
+loadAssets();
+</script>
+</body>
+</html>

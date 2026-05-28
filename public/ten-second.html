@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>EDF訓練③ 10秒チャレンジ</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=M+PLUS+1p:wght@800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%;
+  background: #07100a;
+  color: #dff0d0;
+  font-family: 'M PLUS 1p', sans-serif;
+  font-weight: 800;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; }
+.screen.active { display: flex; }
+
+/* ===== START ===== */
+#screen-start {
+  background: radial-gradient(ellipse at center, #0d1f0d 0%, #050d05 70%);
+  gap: 24px; padding: 40px 24px; text-align: center;
+}
+.start-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px; letter-spacing: 5px; color: rgba(136,255,85,0.6);
+}
+.start-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 26px; font-weight: 900; letter-spacing: 3px; color: #fff;
+  text-shadow: 0 0 20px rgba(136,255,85,0.4);
+}
+.start-rule {
+  font-size: 14px; letter-spacing: 2px; color: rgba(136,255,85,0.7);
+  line-height: 1.9;
+}
+.clear-hint {
+  font-size: 12px; color: rgba(255,200,50,0.7); letter-spacing: 2px;
+}
+.btn-go {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px; font-weight: 700; letter-spacing: 5px;
+  background: rgba(136,255,85,0.15);
+  border: 2px solid rgba(136,255,85,0.7);
+  color: #88ff55; padding: 18px 44px; cursor: pointer; border-radius: 4px;
+  box-shadow: 0 0 24px rgba(136,255,85,0.3);
+  transition: transform 0.1s;
+}
+.btn-go:active { transform: scale(0.95); }
+
+/* ===== GAME ===== */
+#screen-game {
+  background: radial-gradient(ellipse at center, #0a1a0a 0%, #030803 100%);
+  gap: 0;
+}
+#game-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px; letter-spacing: 6px; color: rgba(136,255,85,0.5);
+  margin-bottom: 20px;
+}
+#game-go-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 52px; font-weight: 900; letter-spacing: 8px;
+  color: #88ff55;
+  text-shadow: 0 0 30px rgba(136,255,85,0.8), 0 0 60px rgba(136,255,85,0.4);
+  animation: go-pulse 1s ease-in-out infinite;
+  margin-bottom: 60px;
+}
+@keyframes go-pulse {
+  0%,100% { opacity: 1; text-shadow: 0 0 30px rgba(136,255,85,0.8), 0 0 60px rgba(136,255,85,0.4); }
+  50% { opacity: 0.7; text-shadow: 0 0 10px rgba(136,255,85,0.3); }
+}
+
+/* 波紋アニメーション */
+.ripple-container {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 60px;
+}
+.ripple {
+  position: absolute;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  border: 2px solid rgba(136,255,85,0.4);
+  animation: ripple-out 2s ease-out infinite;
+}
+.ripple:nth-child(2) { animation-delay: 0.66s; }
+.ripple:nth-child(3) { animation-delay: 1.32s; }
+@keyframes ripple-out {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+#btn-stop {
+  width: 140px; height: 140px; border-radius: 50%;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 22px; font-weight: 900; letter-spacing: 4px;
+  background: rgba(255,60,60,0.15);
+  border: 3px solid rgba(255,80,80,0.8);
+  color: #ff5555;
+  cursor: pointer;
+  box-shadow: 0 0 30px rgba(255,60,60,0.4), inset 0 0 20px rgba(255,60,60,0.1);
+  transition: transform 0.08s, box-shadow 0.08s;
+  position: relative; z-index: 1;
+}
+#btn-stop:active {
+  transform: scale(0.92);
+  box-shadow: 0 0 10px rgba(255,60,60,0.3), inset 0 0 8px rgba(255,60,60,0.2);
+}
+#game-hint {
+  font-size: 12px; letter-spacing: 3px; color: rgba(255,255,255,0.3);
+}
+
+/* ===== RESULT ===== */
+#screen-result {
+  background: url('/top_bg.png') center/cover no-repeat;
+  justify-content: flex-end;
+}
+#screen-result::before {
+  content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.6);
+}
+#result-taisa {
+  position: absolute; bottom: 0; left: 0;
+  height: 72vh; object-fit: contain;
+  z-index: 1;
+}
+#result-content {
+  position: relative; z-index: 2;
+  width: 100%; padding: 0 20px 40px;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 16px;
+}
+#result-score-box {
+  background: rgba(0,0,0,0.8);
+  border: 2px solid rgba(136,255,85,0.5);
+  border-radius: 8px; padding: 14px 20px; text-align: center; width: 100%;
+}
+#result-score-box.cleared {
+  border-color: rgba(255,220,50,0.8);
+  box-shadow: 0 0 20px rgba(255,220,50,0.3);
+}
+.result-score-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10px; letter-spacing: 4px; color: rgba(136,255,85,0.6);
+}
+#result-score-box.cleared .result-score-label {
+  color: rgba(255,220,50,0.8);
+}
+.result-time-display {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 44px; font-weight: 900; color: #88ff55;
+  text-shadow: 0 0 20px rgba(136,255,85,0.6);
+}
+#result-score-box.cleared .result-time-display {
+  color: #ffd432;
+  text-shadow: 0 0 20px rgba(255,212,50,0.8);
+}
+.result-time-unit { font-size: 16px; color: rgba(136,255,85,0.6); }
+.result-diff {
+  font-size: 13px; letter-spacing: 2px; margin-top: 4px;
+  color: rgba(255,255,255,0.5);
+}
+#result-message {
+  font-size: 17px; letter-spacing: 2px; color: #fff;
+  text-align: right; line-height: 1.8;
+  white-space: pre-line;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  min-height: 60px;
+}
+.result-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.result-btn {
+  font-family: 'M PLUS 1p', sans-serif; font-weight: 800;
+  font-size: 15px; letter-spacing: 3px;
+  padding: 16px; border-radius: 6px; cursor: pointer;
+  transition: transform 0.1s;
+}
+.result-btn:active { transform: scale(0.97); }
+.btn-share-result {
+  background: rgba(136,255,85,0.15);
+  border: 2px solid rgba(136,255,85,0.7);
+  color: #88ff55;
+}
+.btn-retry-result {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #aaa;
+}
+.btn-hub-result {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #666;
+}
+</style>
+</head>
+<body>
+
+<!-- START -->
+<div id="screen-start" class="screen active">
+  <div class="start-num">TRAINING — 03</div>
+  <div class="start-title">10秒 チャレンジ</div>
+  <div class="start-rule">
+    タイマーは見えない！<br>
+    頭の中でカウントして<br>
+    ピッタリ10秒で止めろ！
+  </div>
+  <div class="clear-hint">▶ ±0.1秒以内でクリア</div>
+  <button class="btn-go" id="btn-start">▶ 訓練開始</button>
+  <button class="btn-hub-result" style="margin-top:8px;padding:10px 24px;border-radius:4px;cursor:pointer;font-size:12px;letter-spacing:2px;" onclick="location.href='/'">← 訓練ハブ</button>
+</div>
+
+<!-- GAME -->
+<div id="screen-game" class="screen">
+  <div id="game-label">STOP AT 10 SECONDS</div>
+  <div id="game-go-text">GO!</div>
+  <div class="ripple-container">
+    <div class="ripple"></div>
+    <div class="ripple"></div>
+    <div class="ripple"></div>
+    <button id="btn-stop">STOP</button>
+  </div>
+  <div id="game-hint">10秒経ったらSTOPを押せ</div>
+</div>
+
+<!-- RESULT -->
+<div id="screen-result" class="screen">
+  <img id="result-taisa" src="/taisa.png" alt="大佐">
+  <div id="result-content">
+    <div id="result-score-box">
+      <div class="result-score-label">YOUR TIME</div>
+      <div>
+        <span class="result-time-display" id="result-time">0.000</span>
+        <span class="result-time-unit"> 秒</span>
+      </div>
+      <div class="result-diff" id="result-diff"></div>
+    </div>
+    <div id="result-message"></div>
+    <div class="result-btns">
+      <button class="result-btn btn-share-result" id="btn-share">仲間を鍛える【シェア】</button>
+      <button class="result-btn btn-retry-result" id="btn-retry">もう一度訓練する</button>
+      <button class="result-btn btn-hub-result" id="btn-hub">訓練ハブに戻る</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CLEAR_RANGE = 0.1; // ±0.1秒
+const TARGET = 10.000;
+
+let startTime = null;
+let resultMs = 0;
+let isRunning = false;
+
+const $ = id => document.getElementById(id);
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+
+// ===== AUDIO =====
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function playBeep(freq, dur, type = 'square') {
+  try {
+    const ac = getAudio();
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.connect(gain); gain.connect(ac.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ac.currentTime);
+    gain.gain.setValueAtTime(0.2, ac.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + dur);
+    osc.start(); osc.stop(ac.currentTime + dur);
+  } catch(e) {}
+}
+function playStart() { playBeep(880, 0.2); }
+function playStop() {
+  try {
+    const ac = getAudio();
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.connect(gain); gain.connect(ac.destination);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(440, ac.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(220, ac.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.3, ac.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.2);
+    osc.start(); osc.stop(ac.currentTime + 0.2);
+  } catch(e) {}
+}
+function playClear() {
+  try {
+    const ac = getAudio();
+    [0, 0.15, 0.3].forEach((t, i) => {
+      const freqs = [523, 659, 784];
+      const osc = ac.createOscillator();
+      const gain = ac.createGain();
+      osc.connect(gain); gain.connect(ac.destination);
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(freqs[i], ac.currentTime + t);
+      gain.gain.setValueAtTime(0.2, ac.currentTime + t);
+      gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + t + 0.25);
+      osc.start(ac.currentTime + t); osc.stop(ac.currentTime + t + 0.25);
+    });
+  } catch(e) {}
+}
+
+// ===== SPEECH =====
+function speakTaisa(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ja-JP'; u.pitch = 0.75; u.rate = 0.9;
+  window.speechSynthesis.speak(u);
+}
+
+// ===== TYPEWRITER =====
+function typeMessage(el, text, cb) {
+  el.textContent = '';
+  let i = 0;
+  const interval = setInterval(() => {
+    el.textContent += text[i++];
+    if (i >= text.length) { clearInterval(interval); if (cb) cb(); }
+  }, 60);
+}
+
+// ===== GAME =====
+function startGame() {
+  playStart();
+  // iOS speech unlock
+  if (window.speechSynthesis) {
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+  }
+  isRunning = true;
+  startTime = performance.now();
+  showScreen('screen-game');
+}
+
+function stopGame() {
+  if (!isRunning) return;
+  isRunning = false;
+  const elapsed = (performance.now() - startTime) / 1000;
+  resultMs = Math.round(elapsed * 1000) / 1000;
+  playStop();
+  showResult(resultMs);
+}
+
+function showResult(t) {
+  const diff = t - TARGET;
+  const absDiff = Math.abs(diff);
+  const cleared = absDiff <= CLEAR_RANGE;
+
+  const timeStr = t.toFixed(3);
+  const diffStr = diff >= 0 ? `+${diff.toFixed(3)}秒` : `${diff.toFixed(3)}秒`;
+
+  $('result-time').textContent = timeStr;
+  $('result-diff').textContent = `目標との差：${diffStr}`;
+
+  const box = $('result-score-box');
+  if (cleared) {
+    box.classList.add('cleared');
+    playClear();
+  } else {
+    box.classList.remove('cleared');
+  }
+
+  showScreen('screen-result');
+
+  const msgEl = $('result-message');
+  if (cleared) {
+    const msg = 'や...やるな...\nもう一度やってみろ！';
+    typeMessage(msgEl, msg, () => speakTaisa('や・・・やるな・・・もう一度やってみろ！'));
+  } else {
+    const msg = 'こんなコトも出来ないのか！\n知人・友人にも広めて\n鍛えておけ！';
+    typeMessage(msgEl, msg, () => speakTaisa('こんなことも出来ないのか！ちじん・ゆうじんにも広めて、きたえておけ！'));
+  }
+}
+
+// ===== EVENTS =====
+$('btn-start').addEventListener('click', () => { startGame(); });
+$('btn-start').addEventListener('touchstart', e => { e.preventDefault(); startGame(); }, { passive: false });
+
+$('btn-stop').addEventListener('click', () => { stopGame(); });
+$('btn-stop').addEventListener('touchstart', e => { e.preventDefault(); stopGame(); }, { passive: false });
+
+$('btn-share').addEventListener('click', () => {
+  const t = resultMs.toFixed(3);
+  const text = `【訓練③10秒チャレンジ】${t}秒！（目標10.000秒） #EDF訓練 #TGS2026`;
+  if (navigator.share) {
+    navigator.share({ text });
+  } else {
+    navigator.clipboard.writeText(text).catch(() => {});
+    alert('クリップボードにコピーしました！');
+  }
+});
+
+$('btn-retry').addEventListener('click', () => {
+  $('result-score-box').classList.remove('cleared');
+  showScreen('screen-start');
+});
+
+$('btn-hub').addEventListener('click', () => { location.href = '/'; });
+</script>
+</body>
+</html>
