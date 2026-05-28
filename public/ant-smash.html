@@ -406,19 +406,22 @@ function startGame() {
   $('hud-time').textContent = GAME_TIME;
   $('hud-time').classList.remove('urgent');
 
-  canvas = $('game-canvas');
-  W = canvas.width  = canvas.offsetWidth;
-  H = canvas.height = canvas.offsetHeight;
-  ctx = canvas.getContext('2d');
-
   clearTimeout(spawnTimer);
   cancelAnimationFrame(rafId);
 
   showScreen('screen-game');
-  spawnAnt(); spawnAnt();
-  scheduleSpawn();
-  startTimer();
-  rafId = requestAnimationFrame(draw);
+
+  // 画面表示後にキャンバスサイズを取得する
+  requestAnimationFrame(() => {
+    canvas = $('game-canvas');
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+    ctx = canvas.getContext('2d');
+    spawnAnt(); spawnAnt();
+    scheduleSpawn();
+    startTimer();
+    rafId = requestAnimationFrame(draw);
+  });
 }
 
 $('btn-start').addEventListener('click', () => {
