@@ -528,6 +528,7 @@ const ASSET_LIST = [
   ['ant2',       '/ant2.png'],
   ['ant3',       '/ant3.png'],
   ['ant4',       '/ant4.png'],
+  ['crush',      '/crush.png'],
   ['taisa',      '/taisa.png'],
 ];
 
@@ -717,14 +718,24 @@ function update(now) {
       continue;
     }
     // collision
-    if (!soldier.dead && !gameOver) {
+    if (!soldier.dead && !gameOver && !a.crushed) {
       const sx = soldier.x + 10, sy = soldier.y + 10;
       const sw = SOL_WIDTH - 20, sh = SOL_HEIGHT - 10;
       const ax = a.x + 8,        ay = a.y + 8;
       const aw = ANT_WIDTH - 16, ah = ANT_HEIGHT - 8;
       if (sx < ax + aw && sx + sw > ax && sy < ay + ah && sy + sh > ay) {
-        triggerGameOver();
-        return;
+        // 上から踏み潰し判定: 落下中かつ兵士の足元が蟻の上半分に接触
+        const stomping = !soldier.onGround && soldier.vy > 0 && (sy + sh) <= ay + ah * 0.55;
+        if (stomping) {
+          a.crushed = true;
+          a.crushTimer = 400;
+          soldier.vy = JUMP_VY * 0.55; // 小さくバウンス
+          soldier.onGround = false;
+          effects.push({ x: a.x, y: a.y, timer: 400, crush: true });
+        } else {
+          triggerGameOver();
+          return;
+        }
       }
     }
   }
@@ -824,14 +835,17 @@ function draw() {
   }
 
   // effects
-  const effImg = ASSETS['effect'];
+  const effImg   = ASSETS['effect'];
+  const crushImg = ASSETS['crush'];
   for (const ef of effects) {
-    if (effImg) {
-      const alpha = Math.min(ef.timer / 400, 1);
-      ctx.globalAlpha = alpha;
+    const alpha = Math.min(ef.timer / 400, 1);
+    ctx.globalAlpha = alpha;
+    if (ef.crush && crushImg) {
+      ctx.drawImage(crushImg, ef.x, ef.y, ANT_WIDTH, ANT_HEIGHT);
+    } else if (effImg) {
       ctx.drawImage(effImg, ef.x - 20, ef.y - 20, SOL_WIDTH + 40, SOL_HEIGHT + 40);
-      ctx.globalAlpha = 1;
     }
+    ctx.globalAlpha = 1;
   }
 }
 

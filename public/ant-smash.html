@@ -63,7 +63,7 @@ body::after {
 
 /* ===== GAME ===== */
 #screen-game {
-  background: url('/ant_bg.png') center/cover no-repeat;
+  background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('/ant_bg.png') center/cover no-repeat;
   justify-content: flex-start;
 }
 #hud {
@@ -218,13 +218,17 @@ function showScreen(id) {
 
 // ===== ASSETS =====
 const antImgs = [];
+let crushImg = null;
 function loadAssets() {
-  return Promise.all([1,2,3,4].map((i, idx) => new Promise(r => {
+  const antPromises = [1,2,3,4].map((i, idx) => new Promise(r => {
     const img = new Image();
-    img.onload = r;
+    img.onload = r; img.onerror = r;
     img.src = `/ant${i}.png`;
     antImgs[idx] = img;
-  })));
+  }));
+  crushImg = new Image();
+  const crushPromise = new Promise(r => { crushImg.onload = r; crushImg.onerror = r; crushImg.src = '/crush.png'; });
+  return Promise.all([...antPromises, crushPromise]);
 }
 
 // ===== AUDIO =====
@@ -322,6 +326,15 @@ function draw(now) {
 
   // 蟻を描画・古い蟻を削除
   ants = ants.filter(a => {
+    // 踏み潰し中
+    if (a.crushed) {
+      a.crushTimer -= 16;
+      if (a.crushTimer <= 0) return false;
+      ctx.globalAlpha = Math.min(1, a.crushTimer / 150);
+      if (crushImg) ctx.drawImage(crushImg, a.x - ANT_SIZE/2, a.y - ANT_SIZE/2, ANT_SIZE, ANT_SIZE);
+      ctx.globalAlpha = 1;
+      return true;
+    }
     const age = now - a.born;
     if (age > a.life) return false;
     const alpha = age > a.life - 300 ? (a.life - age) / 300 : 1;
@@ -343,9 +356,11 @@ function draw(now) {
 function handleTap(px, py) {
   for (let i = ants.length - 1; i >= 0; i--) {
     const a = ants[i];
+    if (a.crushed) continue;
     const dist = Math.hypot(px - a.x, py - a.y);
     if (dist < ANT_SIZE * 0.7) {
-      ants.splice(i, 1);
+      a.crushed = true;
+      a.crushTimer = 380;
       score++;
       $('hud-score').textContent = `${score} 匹`;
       playSmash();
