@@ -91,7 +91,7 @@ body::after {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  padding-bottom: 28vh;
+  padding-bottom: 23vh;
   position: relative;
   z-index: 2;
   min-height: 0;
@@ -129,9 +129,6 @@ body::after {
 /* アクセスカウンター */
 #counter-box {
   width: 100%;
-  background: rgba(0,0,0,0.75);
-  border: 1px solid rgba(136,255,85,0.4);
-  border-radius: 8px;
   padding: 10px 16px;
   text-align: center;
   position: relative;
@@ -270,7 +267,7 @@ body::after {
 fetch('/api/counter', { method: 'POST' })
   .then(r => r.json())
   .then(d => {
-    document.getElementById('counter-num').textContent = d.count.toLocaleString('ja-JP');
+    document.getElementById('counter-num').textContent = String(d.count).padStart(4, '0');
     document.getElementById('counter-milestone').textContent = d.milestone.toLocaleString('ja-JP');
   })
   .catch(() => {
