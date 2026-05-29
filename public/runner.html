@@ -727,11 +727,11 @@ function update(now) {
         // 上から踏み潰し判定: 落下中かつ兵士の足元が蟻の上半分に接触
         const stomping = !soldier.onGround && soldier.vy > 0 && (sy + sh) <= ay + ah * 0.55;
         if (stomping) {
-          a.crushed = true;
-          a.crushTimer = 400;
-          soldier.vy = JUMP_VY * 0.55; // 小さくバウンス
+          soldier.vy = JUMP_VY * 0.55;
           soldier.onGround = false;
           effects.push({ x: a.x, y: a.y, timer: 400, crush: true });
+          ants.splice(i, 1);
+          continue;
         } else {
           triggerGameOver();
           return;
