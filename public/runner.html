@@ -841,7 +841,11 @@ function draw() {
     const alpha = Math.min(ef.timer / 400, 1);
     ctx.globalAlpha = alpha;
     if (ef.crush && crushImg) {
-      ctx.drawImage(crushImg, ef.x, ef.y, ANT_WIDTH, ANT_HEIGHT);
+      const cw = ANT_WIDTH * 2.5, ch = ANT_HEIGHT * 2.5;
+      ctx.shadowColor = '#88ff55';
+      ctx.shadowBlur = 35;
+      ctx.drawImage(crushImg, ef.x - ANT_WIDTH * 0.75, ef.y - ANT_HEIGHT * 0.75, cw, ch);
+      ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
     } else if (effImg) {
       ctx.drawImage(effImg, ef.x - 20, ef.y - 20, SOL_WIDTH + 40, SOL_HEIGHT + 40);
     }

@@ -331,7 +331,13 @@ function draw(now) {
       a.crushTimer -= 16;
       if (a.crushTimer <= 0) return false;
       ctx.globalAlpha = Math.min(1, a.crushTimer / 150);
-      if (crushImg) ctx.drawImage(crushImg, a.x - ANT_SIZE/2, a.y - ANT_SIZE/2, ANT_SIZE, ANT_SIZE);
+      if (crushImg) {
+        const cs = ANT_SIZE * 2.2;
+        ctx.shadowColor = '#88ff55';
+        ctx.shadowBlur = 30;
+        ctx.drawImage(crushImg, a.x - cs/2, a.y - cs/2, cs, cs);
+        ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
+      }
       ctx.globalAlpha = 1;
       return true;
     }
