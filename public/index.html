@@ -126,6 +126,38 @@ body::after {
   margin-top: 4px;
 }
 
+/* アクセスカウンター */
+#counter-box {
+  width: 100%;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid rgba(136,255,85,0.4);
+  border-radius: 8px;
+  padding: 10px 16px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 4px;
+}
+#counter-main {
+  font-size: 15px;
+  letter-spacing: 2px;
+  color: #fff;
+  line-height: 1.6;
+}
+#counter-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: #88ff55;
+  text-shadow: 0 0 12px rgba(136,255,85,0.6);
+}
+#counter-sub {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: rgba(136,255,85,0.5);
+  margin-top: 2px;
+}
+
 /* 訓練ボタン */
 .training-list {
   width: 100%;
@@ -199,6 +231,11 @@ body::after {
     </div>
   </div>
 
+  <div id="counter-box">
+    <div id="counter-main">現状の訓練生は <span id="counter-num">…</span> 人だ！</div>
+    <div id="counter-sub"><span id="counter-milestone">10,000</span>人突破で物資補給させてやる！</div>
+  </div>
+
   <div class="training-list">
     <a class="training-btn" href="/runner.html">
       <div class="training-num">①</div>
@@ -229,6 +266,17 @@ body::after {
 </div>
 
 <script>
+// アクセスカウンター
+fetch('/api/counter', { method: 'POST' })
+  .then(r => r.json())
+  .then(d => {
+    document.getElementById('counter-num').textContent = d.count.toLocaleString('ja-JP');
+    document.getElementById('counter-milestone').textContent = d.milestone.toLocaleString('ja-JP');
+  })
+  .catch(() => {
+    document.getElementById('counter-num').textContent = '----';
+  });
+
 // ボタンクリック音
 let audioCtx = null;
 function playBtnClick() {
