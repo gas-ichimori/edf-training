@@ -72,15 +72,27 @@ body::after {
   margin-top: 4px;
 }
 
-/* 大佐エリア */
+/* 大佐（絶対配置・左下） */
+#taisa-img {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 62vh;
+  object-fit: contain;
+  z-index: 1;
+  filter: drop-shadow(0 0 16px rgba(136,255,85,0.3));
+}
+
+/* 大佐エリア（吹き出しのみ・右寄せ） */
 .taisa-area {
   flex: 1;
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   justify-content: flex-end;
+  padding-bottom: 16px;
   position: relative;
+  z-index: 2;
   min-height: 0;
 }
 .speech-bubble {
@@ -88,36 +100,21 @@ body::after {
   border: 2px solid rgba(136,255,85,0.6);
   border-radius: 12px;
   padding: 12px 18px;
-  margin-bottom: 10px;
-  max-width: 280px;
+  max-width: 220px;
   position: relative;
   text-align: center;
 }
-.speech-bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -12px; left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-top-color: rgba(136,255,85,0.6);
-}
 .speech-main {
-  font-size: 17px;
+  font-size: 16px;
   letter-spacing: 2px;
   color: #fff;
   line-height: 1.7;
 }
 .speech-sub {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 2px;
   color: rgba(136,255,85,0.8);
   margin-top: 4px;
-}
-#taisa-img {
-  height: 36vh;
-  max-height: 260px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 16px rgba(136,255,85,0.2));
 }
 
 /* 訓練ボタン */
@@ -126,6 +123,8 @@ body::after {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  position: relative;
+  z-index: 2;
 }
 .training-btn {
   width: 100%;
@@ -182,12 +181,13 @@ body::after {
     <div class="header-sub">TRAINING SYSTEM v1.0</div>
   </div>
 
+  <img id="taisa-img" src="/taisa.png" alt="大佐">
+
   <div class="taisa-area">
     <div class="speech-bubble">
       <div class="speech-main">集合しろ！クズども！並べ！</div>
       <div class="speech-sub">待機の間も訓練を怠るな！</div>
     </div>
-    <img id="taisa-img" src="/taisa.png" alt="大佐">
   </div>
 
   <div class="training-list">
