@@ -31,35 +31,89 @@ body::after {
 
 /* ===== START ===== */
 #screen-start {
-  background: radial-gradient(ellipse at center, #0d1f0d 0%, #050d05 70%);
-  gap: 24px; padding: 40px 24px; text-align: center;
+  position: fixed; inset: 0;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 28px; z-index: 10;
 }
-.start-num {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 11px; letter-spacing: 5px; color: rgba(136,255,85,0.6);
+#start-bg {
+  position: absolute; inset: 0;
+  background: url('/top_bg.png') center center / cover no-repeat;
+  z-index: 0;
 }
-.start-title {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 26px; font-weight: 900; letter-spacing: 3px; color: #fff;
-  text-shadow: 0 0 20px rgba(136,255,85,0.4);
+#start-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(0,0,0,0.55);
 }
-.start-rule {
-  font-size: 14px; letter-spacing: 2px; color: rgba(136,255,85,0.7);
-  line-height: 1.9;
+#screen-start > *:not(#start-bg) { position: relative; z-index: 1; }
+
+#logo-switcher {
+  position: relative; width: 200px; height: 80px;
 }
-.clear-hint {
-  font-size: 12px; color: rgba(255,200,50,0.7); letter-spacing: 2px;
+#logo-switcher img {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%; object-fit: contain;
+  opacity: 0; transition: opacity 0.6s ease;
+  filter: drop-shadow(0 2px 16px rgba(0,0,0,0.8));
 }
-.btn-go {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 18px; font-weight: 700; letter-spacing: 5px;
-  background: rgba(136,255,85,0.15);
-  border: 2px solid rgba(136,255,85,0.7);
-  color: #88ff55; padding: 18px 44px; cursor: pointer; border-radius: 4px;
-  box-shadow: 0 0 24px rgba(136,255,85,0.3);
-  transition: transform 0.1s;
+#logo-switcher img.active { opacity: 1; }
+
+#top-title {
+  text-align: center;
 }
-.btn-go:active { transform: scale(0.95); }
+#top-title h1 {
+  font-size: 42px; letter-spacing: 6px; color: #c8a832;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.9); line-height: 1.2;
+}
+#top-title .sub-en {
+  display: block; margin-top: 8px;
+  font-size: 13px; letter-spacing: 4px; color: rgba(200,168,50,0.8);
+}
+.top-desc {
+  text-align: center;
+  font-size: 18px; letter-spacing: 3px; color: #dff0d0;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.9); line-height: 1.8;
+}
+.top-desc-en {
+  display: block; margin-top: 8px;
+  font-size: 11px; letter-spacing: 3px; color: rgba(200,168,50,0.8);
+}
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+#press-hint { text-align: center; line-height: 1.9; }
+#press-hint .hint-ja {
+  display: block; font-size: 15px; letter-spacing: 3px; color: #dff0d0;
+  text-shadow: 0 0 10px rgba(136,255,85,0.5);
+  animation: blink 1.1s ease-in-out infinite;
+}
+#press-hint .hint-en {
+  display: block; font-family: 'Orbitron', sans-serif;
+  font-size: 10px; letter-spacing: 3px; color: rgba(136,255,85,0.7);
+  animation: blink 1.1s ease-in-out infinite; animation-delay: 0.05s;
+}
+#start-btn {
+  background: none; border: none; cursor: pointer; padding: 0;
+  filter: drop-shadow(0 0 16px rgba(136,255,85,0.6));
+  transition: transform 0.15s, filter 0.15s;
+}
+#start-btn img { width: 110px; height: 110px; object-fit: contain; }
+@keyframes btn-launch {
+  0%   { transform: scale(1); }
+  25%  { transform: scale(0.82); }
+  60%  { transform: scale(1.18); }
+  80%  { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+#start-btn.launching {
+  animation: btn-launch 0.45s ease forwards;
+  pointer-events: none;
+}
+#top-copyright {
+  position: absolute; bottom: 10px; left: 0; right: 0;
+  text-align: center; font-size: 8px; letter-spacing: 3px;
+  color: rgba(200,240,160,0.6);
+}
 
 /* ===== GAME ===== */
 #screen-game {
@@ -88,21 +142,26 @@ body::after {
 
 /* ===== RESULT ===== */
 #screen-result {
-  background: url('/top_bg.png') center/cover no-repeat;
+  background: url('/bg.png') center center/cover no-repeat;
   justify-content: flex-end;
 }
 #screen-result::before {
-  content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.6);
+  content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.48);
 }
 #result-taisa {
-  position: absolute; bottom: 0; left: 0;
-  height: 72vh; object-fit: contain;
+  position: absolute; bottom: 0; left: 0; right: 0;
+  display: flex; justify-content: center; align-items: flex-end;
   z-index: 1;
+}
+#result-taisa img {
+  max-height: 82vh; max-width: 95vw;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 32px rgba(0,0,0,0.7));
 }
 #result-content {
   position: relative; z-index: 2;
   width: 100%; padding: 0 20px 40px;
-  display: flex; flex-direction: column; align-items: flex-end; gap: 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
 }
 #result-score-box {
   background: rgba(0,0,0,0.8);
@@ -155,15 +214,35 @@ body::after {
 
 <!-- START -->
 <div id="screen-start" class="screen active">
-  <div class="start-num">TRAINING — 02</div>
-  <div class="start-title">蟻 殲 滅</div>
-  <div class="start-rule">
-    画面に現れる蟻をタップで潰せ！<br>
-    30秒で何匹倒せるか！
+  <div id="start-bg"></div>
+
+  <div id="logo-switcher">
+    <img src="/logo3.png" alt="EDF 5" class="active">
+    <img src="/logo2.png" alt="EDF 6">
+    <img src="/logo1.png" alt="EDF 6.1">
   </div>
-  <div class="clear-hint">▶ 90匹以上でクリア</div>
-  <button class="btn-go" id="btn-start">▶ 訓練開始</button>
-  <button class="btn-hub-result" style="margin-top:8px;padding:10px 24px;border-radius:4px;cursor:pointer;font-size:12px;letter-spacing:2px;" onclick="location.href='/'">← 訓練ハブ</button>
+
+  <div id="top-title">
+    <h1>殲滅せよ！EDF！</h1>
+    <span class="sub-en">EXTERMINATE THE ENEMY! EDF!</span>
+  </div>
+
+  <div class="top-desc">
+    <p>TRAINING 02</p>
+    <p>タップで倒せ！</p>
+    <span class="top-desc-en">TAP THE ANTS TO ELIMINATE THEM!</span>
+  </div>
+
+  <div id="press-hint">
+    <span class="hint-ja">▼ ボタンを押せ ▼</span>
+    <span class="hint-en">▼ PRESS THE BUTTON ▼</span>
+  </div>
+
+  <button id="start-btn" aria-label="ゲームスタート">
+    <img src="/mark.png" alt="START">
+  </button>
+
+  <p id="top-copyright">© D3PUBLISHER INC. All rights reserved.</p>
 </div>
 
 <!-- GAME -->
@@ -177,7 +256,7 @@ body::after {
 
 <!-- RESULT -->
 <div id="screen-result" class="screen">
-  <img id="result-taisa" src="/taisa.png" alt="大佐">
+  <div id="result-taisa"><img src="/taisa.png" alt="大佐"></div>
   <div id="result-content">
     <div id="result-score-box">
       <div class="result-score-label">KILL COUNT</div>
@@ -185,9 +264,9 @@ body::after {
     </div>
     <div id="result-message"></div>
     <div class="result-btns">
-      <button class="result-btn btn-share-result" id="btn-share">仲間を鍛える【シェア】</button>
+      <button class="result-btn btn-share-result" id="btn-share">仲間に広める</button>
       <button class="result-btn btn-retry-result" id="btn-retry">もう一度訓練する</button>
-      <button class="result-btn btn-hub-result" id="btn-hub">訓練ハブに戻る</button>
+      <button class="result-btn btn-hub-result" id="btn-hub">別の訓練をする</button>
     </div>
   </div>
 </div>
@@ -459,13 +538,28 @@ function startGame() {
   });
 }
 
-$('btn-start').addEventListener('click', () => {
+// ===== LOGO SWITCHER =====
+(function() {
+  const logos = document.querySelectorAll('#logo-switcher img');
+  let current = 0;
+  setInterval(() => {
+    logos[current].classList.remove('active');
+    current = (current + 1) % logos.length;
+    logos[current].classList.add('active');
+  }, 2000);
+})();
+
+$('start-btn').addEventListener('click', () => {
   if (window.speechSynthesis) window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
   playBtnClick();
   playStart();
-  startGame();
+  const btn = $('start-btn');
+  btn.classList.add('launching');
+  setTimeout(() => {
+    btn.classList.remove('launching');
+    startGame();
+  }, 450);
 });
-document.querySelector('#screen-start .btn-hub-result').addEventListener('click', () => { playBtnClick(); });
 
 loadAssets();
 </script>
