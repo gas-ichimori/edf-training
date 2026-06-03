@@ -335,9 +335,6 @@ const ALL_ASSETS = [
   '/explosion_frame1.png', '/explosion_frame2.png', '/explosion_frame3.png',
 ];
 
-let assetsLoaded = false;
-let tapped = false;
-
 function preloadImage(src) {
   return new Promise(resolve => {
     const img = new Image();
@@ -346,28 +343,10 @@ function preloadImage(src) {
   });
 }
 
-function unlockButtons() {
-  if (!assetsLoaded || !tapped) return;
+Promise.all(ALL_ASSETS.map(preloadImage)).then(() => {
   document.querySelector('.training-list').classList.remove('locked');
   document.getElementById('boot-status').classList.add('done');
-}
-
-function onTap() {
-  if (tapped) return;
-  tapped = true;
-  unlockButtons();
-}
-
-Promise.all(ALL_ASSETS.map(preloadImage)).then(() => {
-  assetsLoaded = true;
-  if (!tapped) {
-    document.getElementById('boot-status').textContent = '画面をタップして開始！';
-  }
-  unlockButtons();
 });
-
-document.addEventListener('touchstart', onTap, { once: true });
-document.addEventListener('click', onTap, { once: true });
 </script>
 </body>
 </html>
