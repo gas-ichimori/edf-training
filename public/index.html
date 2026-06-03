@@ -192,7 +192,7 @@ body::after {
 /* 起動ステータス表示（最前面・画面中央固定） */
 #boot-status {
   position: fixed;
-  top: 50%; left: 50%;
+  top: 45%; left: 50%;
   transform: translate(-50%, calc(-50% - 1.5vh));
   width: 90%;
   text-align: center;
@@ -322,7 +322,7 @@ document.querySelectorAll('.training-btn').forEach(btn => {
   btn.addEventListener('touchstart', () => playBtnClick(), { passive: true });
 });
 
-// ===== 起動シーケンス: 全アート読込 + 大佐ボイス完了でボタン解禁 =====
+// ===== 起動シーケンス: 全アート読込 + タップでボタン解禁 =====
 const ALL_ASSETS = [
   '/taisa.png', '/bg.png', '/top_bg.png', '/ant_bg.png', '/ground.png',
   '/crush.png', '/effect.png', '/mark.png',
@@ -336,7 +336,7 @@ const ALL_ASSETS = [
 ];
 
 let assetsLoaded = false;
-let voiceDone    = false;
+let tapped = false;
 
 function preloadImage(src) {
   return new Promise(resolve => {
@@ -347,46 +347,27 @@ function preloadImage(src) {
 }
 
 function unlockButtons() {
-  if (!assetsLoaded || !voiceDone) return;
-  const list = document.querySelector('.training-list');
-  list.classList.remove('locked');
-  const status = document.getElementById('boot-status');
-  status.classList.add('done');
+  if (!assetsLoaded || !tapped) return;
+  document.querySelector('.training-list').classList.remove('locked');
+  document.getElementById('boot-status').classList.add('done');
 }
 
-// 全画像プリロード
+function onTap() {
+  if (tapped) return;
+  tapped = true;
+  unlockButtons();
+}
+
 Promise.all(ALL_ASSETS.map(preloadImage)).then(() => {
   assetsLoaded = true;
-  if (!spoken) {
-    document.getElementById('boot-status').textContent = '画面をタップして号令を聞け！';
+  if (!tapped) {
+    document.getElementById('boot-status').textContent = '画面をタップして開始！';
   }
   unlockButtons();
 });
 
-// 大佐ボイス
-function speakTaisa(text, onEnd) {
-  if (!window.speechSynthesis) { if (onEnd) onEnd(); return; }
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'ja-JP'; u.pitch = 0.75; u.rate = 0.9; u.volume = 1;
-  if (onEnd) u.onend = onEnd;
-  window.speechSynthesis.speak(u);
-}
-
-// iOS解禁: 最初のタップで音声解禁 + 大佐セリフ → 喋り終わったらボタン解禁
-let spoken = false;
-function bootVoice() {
-  if (spoken) return; spoken = true;
-  document.getElementById('boot-status').textContent = '号令を聞け！';
-  speakTaisa('集合しろ！クズども！並べ！待機の間も訓練を怠るな！', () => {
-    voiceDone = true;
-    unlockButtons();
-  });
-  // 音声非対応・無音環境のフォールバック（最大6秒で解禁）
-  setTimeout(() => { voiceDone = true; unlockButtons(); }, 6000);
-}
-document.addEventListener('touchstart', bootVoice, { once: false });
-document.addEventListener('click', bootVoice, { once: false });
+document.addEventListener('touchstart', onTap, { once: true });
+document.addEventListener('click', onTap, { once: true });
 </script>
 </body>
 </html>
