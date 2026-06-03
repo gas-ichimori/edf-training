@@ -235,12 +235,15 @@ body::after {
 
   <div id="press-hint">
     <span class="hint-ja">▼ ボタンを押せ ▼</span>
-    <span class="hint-en">▼ PRESS THE BUTTON ▼</span>
   </div>
 
   <button id="start-btn" aria-label="ゲームスタート">
     <img src="/mark.png" alt="START">
   </button>
+
+  <div id="press-hint">
+    <span class="hint-en">▲ PRESS THE BUTTON ▲</span>
+  </div>
 
   <p id="top-copyright">© D3PUBLISHER INC. All rights reserved.</p>
 </div>
@@ -504,7 +507,7 @@ $('btn-share').addEventListener('click', async () => {
   try {
     await navigator.share({
       title: 'EDF訓練',
-      text: `【訓練②蟻殲滅】${score}匹撃破！${score >= CLEAR_COUNT ? 'クリア！' : ''}  #EDF訓練 #TGS2026`
+      text: `TGS2026 D3P ブース番号：◯◯ で地球防衛軍の訓練中！集合しろ！${score}匹殲滅！ #EDF訓練 #TGS2026`
     });
   } catch(e) {}
 });

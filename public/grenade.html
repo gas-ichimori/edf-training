@@ -29,76 +29,36 @@ body::after {
 .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; }
 .screen.active { display: flex; }
 
-/* ===== GRENADE CSS ART ===== */
+/* ===== GRENADE IMAGE ===== */
 .grenade {
   position: relative;
-  width: 70px;
-  height: 110px;
+  width: 90px;
+  height: 150px;
   flex-shrink: 0;
 }
-.g-pin {
+/* 手榴弾本体画像（ピンあり/なしを切り替え） */
+.grenade .g-img {
   position: absolute;
-  top: -2px; left: 50%;
-  transform: translateX(-50%);
-  width: 22px; height: 22px;
-  border: 3px solid #c8a840;
-  border-radius: 50%;
-  z-index: 3;
-}
-.g-pin::after {
-  content: '';
-  position: absolute;
-  left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  width: 6px; height: 14px;
-  background: #c8a840;
-  border-radius: 2px;
-}
-.g-neck {
-  position: absolute;
-  top: 18px; left: 50%;
-  transform: translateX(-50%);
-  width: 18px; height: 16px;
-  background: linear-gradient(to bottom, #4a5c2a, #2e3e18);
-  border-radius: 3px;
-  z-index: 2;
-}
-.g-body {
-  position: absolute;
-  top: 30px; left: 50%;
-  transform: translateX(-50%);
-  width: 64px; height: 76px;
-  background: linear-gradient(150deg, #5a7a2e 0%, #3d5c1a 45%, #2a4010 100%);
-  border-radius: 50% 50% 42% 42% / 56% 56% 44% 44%;
-  overflow: hidden;
-  box-shadow: inset -6px -10px 18px rgba(0,0,0,0.5), 2px 3px 8px rgba(0,0,0,0.6);
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: contain;
   z-index: 1;
 }
-.g-body::before {
-  content: '';
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(90deg, transparent 48%, rgba(0,0,0,0.25) 48%, rgba(0,0,0,0.25) 52%, transparent 52%),
-    linear-gradient(0deg, transparent 28%, rgba(0,0,0,0.2) 28%, rgba(0,0,0,0.2) 32%, transparent 32%,
-      transparent 60%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.2) 64%, transparent 64%);
-}
-.g-lever {
+/* 飛んでいくピン画像 */
+.grenade .g-pin-img {
   position: absolute;
-  top: 36px; right: 4px;
-  width: 10px; height: 44px;
-  background: linear-gradient(to right, #909090, #505050);
-  border-radius: 5px 5px 2px 2px;
-  z-index: 4;
-  box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+  top: 4px; left: 38%;
+  width: 34px; height: auto;
+  z-index: 3;
 }
 
 /* ===== ANIMATIONS ===== */
 @keyframes pinFly {
-  0%   { transform: translateX(-50%) scale(1); opacity: 1; }
-  15%  { transform: translateX(-30%) translateY(-15px) scale(1.2); opacity: 1; }
-  100% { transform: translateX(200%) translateY(-120px) rotate(540deg) scale(0.3); opacity: 0; }
+  0%   { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; }
+  15%  { transform: translate(10px,-15px) scale(1.15) rotate(60deg); opacity: 1; }
+  100% { transform: translate(160px,-120px) rotate(540deg) scale(0.3); opacity: 0; }
 }
-.g-pin.fly { animation: pinFly 0.75s ease-in forwards; }
+.g-pin-img.fly { animation: pinFly 0.75s ease-in forwards; }
 
 @keyframes grenadeShake {
   0%,100% { transform: rotate(0deg) translate(0,0); }
@@ -129,25 +89,16 @@ body::after {
   100% { transform: scale(0.65); opacity: 0; }
 }
 
-/* ===== EXPLOSION ===== */
-@keyframes expCore {
-  0%   { transform: translate(-50%,-50%) scale(0); opacity: 1; background: #fff; }
-  15%  { transform: translate(-50%,-50%) scale(6);  background: #ffee44; }
-  45%  { transform: translate(-50%,-50%) scale(18); background: #ff6600; opacity: 0.85; }
-  80%  { transform: translate(-50%,-50%) scale(28); background: #aa2200; opacity: 0.4; }
-  100% { transform: translate(-50%,-50%) scale(35); opacity: 0; }
-}
-.exp-core {
+/* ===== EXPLOSION (画像スプライト) ===== */
+.exp-img {
   position: fixed;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  background: #fff;
+  transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 600;
-  animation: expCore 0.9s ease-out forwards;
+  object-fit: contain;
 }
 @keyframes flashOut {
-  0%   { opacity: 0.85; }
+  0%   { opacity: 0.9; }
   100% { opacity: 0; }
 }
 .screen-flash {
@@ -156,30 +107,6 @@ body::after {
   pointer-events: none;
   z-index: 700;
   animation: flashOut 0.45s ease-out forwards;
-}
-@keyframes sparkFly {
-  0%   { opacity: 1; }
-  100% { opacity: 0; }
-}
-.spark {
-  position: fixed;
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: #ffaa00;
-  pointer-events: none;
-  z-index: 610;
-}
-@keyframes smokeRise {
-  0%   { transform: scale(0.4) translateY(0); opacity: 0.65; }
-  100% { transform: scale(3) translateY(-70px); opacity: 0; }
-}
-.smoke {
-  position: fixed;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(70,55,35,0.55) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 590;
-  animation: smokeRise 1.6s ease-out forwards;
 }
 
 /* ===== START SCREEN ===== */
@@ -280,10 +207,10 @@ body::after {
 
 /* ===== GAME SCREEN ===== */
 #screen-game {
-  background: radial-gradient(ellipse at center, #140606 0%, #080202 100%);
+  background: linear-gradient(rgba(10,4,4,0.55), rgba(8,2,2,0.7)), url('/grenade_bg.png') center center/cover no-repeat #080202;
   gap: 28px;
 }
-#game-top-label { font-family:'Orbitron',sans-serif; font-size:11px; letter-spacing:6px; color:rgba(255,90,40,0.55); }
+#game-top-label { font-family:'Orbitron',sans-serif; font-size:11px; letter-spacing:6px; color:rgba(255,90,40,0.7); text-shadow:0 0 10px rgba(0,0,0,0.9); }
 #ring-wrap {
   display:flex; align-items:center; justify-content:center;
 }
@@ -296,12 +223,12 @@ body::after {
   cursor:pointer;
   box-shadow:0 0 40px rgba(255,80,40,0.45), inset 0 0 28px rgba(255,50,0,0.18);
   transition:transform 0.08s, box-shadow 0.08s;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
 }
 #btn-throw:active { transform:scale(0.92); box-shadow:0 0 15px rgba(255,80,40,0.3); }
-.throw-icon  { font-size:46px; }
+.throw-icon  { width:64px; height:64px; object-fit:contain; filter:drop-shadow(0 0 6px rgba(255,120,40,0.6)); }
 .throw-label { font-size:20px; font-weight:900; letter-spacing:5px; }
-#game-hint { font-size:12px; letter-spacing:3px; color:rgba(255,200,60,0.55); }
+#game-hint { font-size:12px; letter-spacing:3px; color:rgba(255,200,60,0.7); text-shadow:0 0 10px rgba(0,0,0,0.9); }
 
 /* ===== RESULT SCREEN ===== */
 #screen-result { background:url('/bg.png') center center/cover no-repeat; justify-content:flex-end; }
@@ -363,12 +290,15 @@ body::after {
 
   <div id="press-hint">
     <span class="hint-ja">▼ ボタンを押せ ▼</span>
-    <span class="hint-en">▼ PRESS THE BUTTON ▼</span>
   </div>
 
   <button id="start-btn" aria-label="訓練開始">
     <img src="/mark.png" alt="START">
   </button>
+
+  <div id="press-hint">
+    <span class="hint-en">▲ PRESS THE BUTTON ▲</span>
+  </div>
 
   <p id="top-copyright">© D3PUBLISHER INC. All rights reserved.</p>
 </div>
@@ -376,11 +306,9 @@ body::after {
 <!-- ===== PIN PULL ===== -->
 <div id="screen-pinpull" class="screen">
   <div id="pp-label">ピンが抜けた！！</div>
-  <div class="grenade" id="pp-grenade" style="transform:scale(1.3)">
-    <div class="g-pin" id="pp-pin"></div>
-    <div class="g-neck"></div>
-    <div class="g-body"></div>
-    <div class="g-lever"></div>
+  <div class="grenade" id="pp-grenade" style="transform:scale(1.4)">
+    <img class="g-img" id="pp-body" src="/grenade_pin.png" alt="手榴弾">
+    <img class="g-pin-img" id="pp-pin" src="/pin.png" alt="ピン">
   </div>
   <div id="pp-count">3</div>
 </div>
@@ -389,14 +317,12 @@ body::after {
 <div id="screen-game" class="screen">
   <div id="game-top-label">THROW AT 5 SECONDS</div>
   <div id="ring-wrap">
-    <div class="grenade" id="game-grenade">
-      <div class="g-neck"></div>
-      <div class="g-body"></div>
-      <div class="g-lever"></div>
+    <div class="grenade" id="game-grenade" style="width:120px;height:190px;">
+      <img class="g-img" src="/grenade_nopin.png" alt="手榴弾">
     </div>
   </div>
   <button id="btn-throw">
-    <span class="throw-icon">🤲</span>
+    <img class="throw-icon" src="/throw_hand.png" alt="">
     <span class="throw-label">THROW!</span>
   </button>
   <div id="game-hint">5秒になったら投げろ！</div>
@@ -534,57 +460,46 @@ function typeMsg(el, text, cb) {
   }, 58);
 }
 
-/* ===== EXPLOSION ===== */
+/* ===== EXPLOSION (画像スプライトアニメ) ===== */
+const EXP_FRAMES = ['/explosion_frame1.png', '/explosion_frame2.png', '/explosion_frame3.png'];
+const EXP_FRAME_MS = 110;
+
 function explode(cx, cy) {
+  const x = cx ?? innerWidth / 2;
+  const y = cy ?? innerHeight / 2;
+
   // screen flash
   const fl = document.createElement('div');
   fl.className = 'screen-flash';
   document.body.appendChild(fl);
   setTimeout(() => fl.remove(), 500);
 
-  // core
-  const core = document.createElement('div');
-  core.className = 'exp-core';
-  core.style.left = (cx ?? innerWidth/2) + 'px';
-  core.style.top  = (cy ?? innerHeight/2) + 'px';
-  document.body.appendChild(core);
-  setTimeout(() => core.remove(), 1000);
+  // 爆発スプライト: frame1→2→3を順再生しながら拡大
+  const size = Math.min(innerWidth, innerHeight) * 0.9;
+  const img = document.createElement('img');
+  img.className = 'exp-img';
+  img.src = EXP_FRAMES[0];
+  img.style.left   = x + 'px';
+  img.style.top    = y + 'px';
+  img.style.width  = size + 'px';
+  img.style.height = size + 'px';
+  img.style.opacity = '1';
+  document.body.appendChild(img);
 
-  // sparks
-  const x = cx ?? innerWidth/2, y = cy ?? innerHeight/2;
-  for (let i = 0; i < 18; i++) {
-    const sp = document.createElement('div');
-    sp.className = 'spark';
-    sp.style.left = x + 'px'; sp.style.top = y + 'px';
-    sp.style.transform = 'translate(-50%,-50%)';
-    const angle = (i / 18) * 360;
-    const dist  = 70 + Math.random() * 130;
-    const tx = Math.cos(angle * Math.PI/180) * dist;
-    const ty = Math.sin(angle * Math.PI/180) * dist;
-    sp.style.background = ['#ffcc00','#ff8800','#ff4400','#ff2200'][i % 4];
-    document.body.appendChild(sp);
-    requestAnimationFrame(() => {
-      sp.style.transition = 'transform 0.72s ease-out, opacity 0.72s ease-out';
-      sp.style.transform  = `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px))`;
-      sp.style.opacity = '0';
-    });
-    setTimeout(() => sp.remove(), 800);
-  }
-
-  // smoke
-  for (let i = 0; i < 5; i++) {
-    setTimeout(() => {
-      const sm = document.createElement('div');
-      sm.className = 'smoke';
-      const sz = 55 + Math.random() * 65;
-      sm.style.width  = sz + 'px';
-      sm.style.height = sz + 'px';
-      sm.style.left   = (x - sz/2 + (Math.random()-0.5)*50) + 'px';
-      sm.style.top    = (y - sz/2) + 'px';
-      document.body.appendChild(sm);
-      setTimeout(() => sm.remove(), 1700);
-    }, i * 130);
-  }
+  let fi = 0;
+  const iv = setInterval(() => {
+    fi++;
+    if (fi < EXP_FRAMES.length) {
+      img.src = EXP_FRAMES[fi];
+    } else {
+      clearInterval(iv);
+      // 最終フレームでフェードアウト
+      img.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+      img.style.transform = 'translate(-50%, -50%) scale(1.2)';
+      img.style.opacity = '0';
+      setTimeout(() => img.remove(), 550);
+    }
+  }, EXP_FRAME_MS);
 }
 
 
@@ -597,7 +512,14 @@ function startGame() {
   showScreen('screen-pinpull');
 
   const pin = $('pp-pin');
-  setTimeout(() => { pin.classList.add('fly'); sndPinPull(); }, 350);
+  // 本体はピンあり画像で開始
+  $('pp-body').src = '/grenade_pin.png';
+  setTimeout(() => {
+    pin.classList.add('fly');
+    sndPinPull();
+    // ピンが抜けたら本体をピンなし画像に切り替え
+    $('pp-body').src = '/grenade_nopin.png';
+  }, 350);
 
   const countEl = $('pp-count');
   let n = 3;
@@ -772,7 +694,7 @@ startBtn.addEventListener('touchend', e => { e.preventDefault(); onStartPress();
 addTap('btn-throw', () => triggerThrow());
 addTap('btn-share', () => {
   sndClick();
-  const txt = `【訓練③手榴弾チャレンジ】${resultSec.toFixed(3)}秒！（目標5.000秒） #EDF訓練 #TGS2026`;
+  const txt = `TGS2026 D3P ブース番号：◯◯ で地球防衛軍の訓練中！集合しろ！${resultSec.toFixed(3)}秒達成！（目標5.000秒） #EDF訓練 #TGS2026`;
   if (navigator.share) navigator.share({ text: txt });
   else { navigator.clipboard.writeText(txt).catch(()=>{}); alert('クリップボードにコピーしました！'); }
 });

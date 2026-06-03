@@ -367,12 +367,15 @@ html, body {
 
   <div id="press-hint">
     <span class="hint-ja">▼ ボタンを押せ ▼</span>
-    <span class="hint-en">▼ PRESS THE BUTTON ▼</span>
   </div>
 
   <button id="start-btn" aria-label="ゲームスタート">
     <img src="/mark.png" alt="START">
   </button>
+
+  <div id="press-hint">
+    <span class="hint-en">▲ PRESS THE BUTTON ▲</span>
+  </div>
 
   <p id="top-copyright">© D3PUBLISHER INC. All rights reserved.</p>
 </div>
@@ -455,6 +458,32 @@ function playVolunteerSound() {
       gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
       osc.start(t); osc.stop(t + 0.14);
     });
+  } catch(e) {}
+}
+function playExplosionSound() {
+  try {
+    const ac = getAudio();
+    // 低音ドゥンと高音バチッの2層で爆発音
+    [[160, 30, 0.5, 0.5], [600, 100, 0.28, 0.28]].forEach(([f, f2, vol, dur]) => {
+      const osc = ac.createOscillator();
+      const gain = ac.createGain();
+      osc.connect(gain); gain.connect(ac.destination);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(f, ac.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(f2, ac.currentTime + dur);
+      gain.gain.setValueAtTime(vol, ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + dur + 0.05);
+      osc.start(); osc.stop(ac.currentTime + dur + 0.1);
+    });
+    // ノイズ成分（破裂音）
+    const buf = ac.createBuffer(1, ac.sampleRate * 0.3, ac.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ac.sampleRate * 0.08));
+    const src = ac.createBufferSource();
+    const ng = ac.createGain();
+    src.buffer = buf; src.connect(ng); ng.connect(ac.destination);
+    ng.gain.setValueAtTime(0.35, ac.currentTime);
+    src.start();
   } catch(e) {}
 }
 function playTypeClick() {
@@ -801,6 +830,7 @@ function triggerGameOver() {
   gameOver    = true;
   gameRunning = false;
 
+  playExplosionSound();
   effects.push({ x: soldier.x, y: soldier.y - 10, timer: 800 });
 
   setTimeout(() => {
@@ -1039,7 +1069,7 @@ $('btn-share').addEventListener('click', function() {
     try {
       await navigator.share({
         title: 'EDF訓練',
-        text: `【訓練①ランナー】SCORE: ${score}点 生存: ${Math.floor(elapsed)}秒 #EDF訓練 #TGS2026`
+        text: `TGS2026 D3P ブース番号：◯◯ で地球防衛軍の訓練中！集合しろ！SCORE: ${score}点 生存: ${Math.floor(elapsed)}秒 #EDF訓練 #TGS2026`
       });
     } catch(e) {}
   });
