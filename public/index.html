@@ -322,17 +322,9 @@ document.querySelectorAll('.training-btn').forEach(btn => {
   btn.addEventListener('touchstart', () => playBtnClick(), { passive: true });
 });
 
-// ===== 起動シーケンス: 全アート読込 + タップでボタン解禁 =====
+// ===== 起動シーケンス: TOPページのアート読込 + タップでボタン解禁 =====
 const ALL_ASSETS = [
-  '/taisa.png', '/bg.png', '/top_bg.png', '/ant_bg.png', '/ground.png',
-  '/crush.png', '/effect.png', '/mark.png',
-  '/logo1.png', '/logo2.png', '/logo3.png',
-  '/ant1.png', '/ant2.png', '/ant3.png', '/ant4.png',
-  '/sol_jump.png', '/sol_run1.png', '/sol_run2.png', '/sol_run3.png',
-  '/sol_run4.png', '/sol_run5.png', '/sol_run6.png',
-  '/grenade_pin.png', '/grenade_nopin.png', '/pin.png',
-  '/grenade_bg.png', '/throw_hand.png',
-  '/explosion_frame1.png', '/explosion_frame2.png', '/explosion_frame3.png',
+  '/taisa.png', '/top_bg.png',
 ];
 
 function preloadImage(src) {
