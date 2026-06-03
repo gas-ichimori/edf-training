@@ -322,9 +322,16 @@ document.querySelectorAll('.training-btn').forEach(btn => {
   btn.addEventListener('touchstart', () => playBtnClick(), { passive: true });
 });
 
-// ===== 起動シーケンス: TOPページのアート読込 + タップでボタン解禁 =====
+// ===== 起動シーケンス: TOPページ + 殲滅訓練のアート読込 + タップでボタン解禁 =====
 const ALL_ASSETS = [
+  // TOPページ
   '/taisa.png', '/top_bg.png',
+  // 殲滅訓練 (ant-smash)
+  '/ant_bg.png', '/bg.png',
+  '/logo1.png', '/logo2.png', '/logo3.png',
+  '/mark.png',
+  '/ant1.png', '/ant2.png', '/ant3.png', '/ant4.png',
+  '/crush.png',
 ];
 
 function preloadImage(src) {
