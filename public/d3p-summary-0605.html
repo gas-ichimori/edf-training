@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>D3P TGS2026 コンペ プレゼン整理メモ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.8;
+    color: #1a1a1a;
+    background: #fff;
+    padding: 0;
+  }
+
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+
+  @media print {
+    body { font-size: 10pt; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+  }
+
+  .cover {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 60px 48px;
+    background: #0d1117;
+    color: #fff;
+    page-break-after: always;
+  }
+  .cover-label {
+    font-size: 9pt;
+    letter-spacing: 4px;
+    color: #88ff55;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  .cover-title {
+    font-size: 26pt;
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+  }
+  .cover-sub {
+    font-size: 11pt;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 48px;
+    line-height: 1.7;
+  }
+  .cover-meta {
+    font-size: 9pt;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 2px;
+  }
+  .cover-accent {
+    color: #88ff55;
+  }
+
+  .section {
+    padding: 32px 48px 16px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #0d1117;
+  }
+  .section-num {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #888;
+    min-width: 60px;
+  }
+  .section-title {
+    font-size: 15pt;
+    font-weight: 900;
+    color: #0d1117;
+    letter-spacing: 0.5px;
+  }
+
+  .subsection {
+    margin-bottom: 24px;
+  }
+  .subsection-title {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #0d1117;
+    background: #f0f4f0;
+    padding: 6px 12px;
+    border-left: 3px solid #2a7a2a;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  p {
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  .flow-box {
+    background: #f8faf8;
+    border: 1px solid #cde0cd;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+  .flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .flow-step:last-child { margin-bottom: 0; }
+  .flow-num {
+    font-size: 8pt;
+    font-weight: 700;
+    color: #fff;
+    background: #2a7a2a;
+    border-radius: 50%;
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .flow-content { flex: 1; }
+  .flow-main {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.5;
+  }
+  .flow-sub {
+    font-size: 9pt;
+    color: #666;
+    margin-top: 2px;
+    line-height: 1.6;
+  }
+  .flow-arrow {
+    text-align: center;
+    color: #2a7a2a;
+    font-size: 14pt;
+    margin: 4px 0 4px 36px;
+  }
+
+  .warning-box {
+    background: #fff8f0;
+    border: 1px solid #e8b84b;
+    border-left: 4px solid #e8b84b;
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin: 14px 0;
+  }
+  .warning-label {
+    font-size: 8pt;
+    font-weight: 700;
+    color: #b87a00;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .warning-text {
+    font-size: 10pt;
+    color: #5a3d00;
+    line-height: 1.7;
+  }
+
+  .good-box {
+    background: #f0faf0;
+    border: 1px solid #88cc88;
+    border-left: 4px solid #2a7a2a;
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin: 14px 0;
+  }
+  .good-label {
+    font-size: 8pt;
+    font-weight: 700;
+    color: #2a7a2a;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .good-text {
+    font-size: 10pt;
+    color: #1a3a1a;
+    line-height: 1.7;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 9.5pt;
+  }
+  th {
+    background: #0d1117;
+    color: #fff;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e0e8e0;
+    color: #333;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #f8faf8; }
+
+  .script-box {
+    background: #0d1117;
+    color: #dff0d0;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 16px 0;
+    line-height: 2.0;
+    font-size: 10pt;
+  }
+  .script-accent { color: #88ff55; font-weight: 700; }
+  .script-quote {
+    color: #aaddff;
+    font-style: italic;
+  }
+  .script-concept {
+    font-size: 14pt;
+    font-weight: 900;
+    color: #88ff55;
+    letter-spacing: 2px;
+    margin-top: 12px;
+    display: block;
+  }
+
+  .key-insight {
+    background: #0d1117;
+    color: #fff;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+  .key-insight-label {
+    font-size: 8pt;
+    letter-spacing: 3px;
+    color: #88ff55;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+  .key-insight-text {
+    font-size: 13pt;
+    font-weight: 700;
+    line-height: 1.7;
+    color: #fff;
+  }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .compare-card {
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .compare-card.bad {
+    background: #fdf0f0;
+    border: 1px solid #e8c0c0;
+  }
+  .compare-card.good {
+    background: #f0faf0;
+    border: 1px solid #88cc88;
+  }
+  .compare-label {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .compare-card.bad .compare-label { color: #cc4444; }
+  .compare-card.good .compare-label { color: #2a7a2a; }
+  .compare-text {
+    font-size: 9.5pt;
+    color: #333;
+    line-height: 1.7;
+  }
+
+  .checklist {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+  }
+  .checklist li {
+    padding: 6px 0 6px 28px;
+    position: relative;
+    font-size: 10pt;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+    line-height: 1.6;
+  }
+  .checklist li::before {
+    content: '✓';
+    position: absolute;
+    left: 4px;
+    color: #2a7a2a;
+    font-weight: 700;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, #0d1117, transparent);
+    margin: 28px 0;
+  }
+
+  .final-note {
+    background: #f8faf8;
+    border: 1px solid #cde0cd;
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 16px 0;
+    font-size: 10pt;
+    color: #1a3a1a;
+    line-height: 1.8;
+  }
+
+  .toc {
+    padding: 32px 48px;
+  }
+  .toc-title {
+    font-size: 13pt;
+    font-weight: 900;
+    margin-bottom: 20px;
+    color: #0d1117;
+  }
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px dotted #ccc;
+    font-size: 10pt;
+    color: #333;
+  }
+  .toc-num { color: #888; min-width: 80px; font-size: 9pt; }
+  .toc-name { flex: 1; }
+</style>
+</head>
+<body>
+
+<!-- カバー -->
+<div class="cover">
+  <div class="cover-label">GA Solutions / Internal Brief</div>
+  <div class="cover-title">
+    D3P TGS2026 コンペ<br>
+    プレゼン設計まとめ
+  </div>
+  <div class="cover-sub">
+    会社紹介の目的設定から、<br>
+    「Playable First. Buzz Follows.」への論理構築まで。<br>
+    重要な指摘と最終スクリプトの記録。
+  </div>
+  <div class="cover-meta">
+    2026.6.4 &nbsp;|&nbsp; GA SOLUTIONS &nbsp;|&nbsp; <span class="cover-accent">CONFIDENTIAL</span>
+  </div>
+</div>
+
+<!-- 目次 -->
+<div class="toc page-break">
+  <div class="toc-title">目次</div>
+  <div class="toc-item"><span class="toc-num">SECTION 01</span><span class="toc-name">会社紹介の目的：「なぜGASが必要か」</span></div>
+  <div class="toc-item"><span class="toc-num">SECTION 02</span><span class="toc-name">意図した論理の流れ</span></div>
+  <div class="toc-item"><span class="toc-num">SECTION 03</span><span class="toc-name">発見された問題点（論理の飛躍と矛盾）</span></div>
+  <div class="toc-item"><span class="toc-num">SECTION 04</span><span class="toc-name">矛盾の解消：ブリッジの考え方</span></div>
+  <div class="toc-item"><span class="toc-num">SECTION 05</span><span class="toc-name">最も重要な指摘：SNS論 vs EDF論</span></div>
+  <div class="toc-item"><span class="toc-num">SECTION 06</span><span class="toc-name">表現の精度を上げた変更点</span></div>
+  <div class="toc-item"><span class="toc-num">SECTION 07</span><span class="toc-name">最終スクリプト（確定版）</span></div>
+  <div class="toc-item"><span class="toc-num">SECTION 08</span><span class="toc-name">当日の最重要アドバイス</span></div>
+</div>
+
+<!-- SECTION 01 -->
+<div class="section page-break">
+  <div class="section-header">
+    <span class="section-num">SECTION 01</span>
+    <span class="section-title">会社紹介の目的：「なぜGASが必要か」</span>
+  </div>
+
+  <div class="subsection no-break">
+    <div class="subsection-title">会社紹介でやるべきこと</div>
+    <p>今回の冒頭説明は「会社の実績を並べる場」ではない。D3P側が5社の提案を比較する中で、<strong>「GAソリューションズが何をする会社で、なぜポマトだけでは駄目なのか」</strong>を最初の1〜2分で植え付けることが目的。</p>
+  </div>
+
+  <div class="compare-grid no-break">
+    <div class="compare-card bad">
+      <div class="compare-label">❌ やってはいけない</div>
+      <div class="compare-text">イベント施工会社として話す。<br>ブース造作の説明から入る。<br>「ポマトに直接頼めばよくない？」と思われる構成にする。</div>
+    </div>
+    <div class="compare-card good">
+      <div class="compare-label">✓ やるべきこと</div>
+      <div class="compare-text">ゲームタイトルの価値を<br>TGSの体験・発信・話題化に翻訳する統合ディレクターとして立つ。<br>評価軸を「試遊起点の成果設計」に誘導する。</div>
+    </div>
+  </div>
+
+  <div class="good-box no-break">
+    <div class="good-label">GASの役割を一文で言うなら</div>
+    <div class="good-text">「試遊そのものだけではなく、その体験が周囲へどう伝わっていくかまで含めて設計する」<br>これがGASの存在意義を最も端的に表している。</div>
+  </div>
+</div>
+
+<!-- SECTION 02 -->
+<div class="section page-break">
+  <div class="section-header">
+    <span class="section-num">SECTION 02</span>
+    <span class="section-title">意図した論理の流れ</span>
+  </div>
+
+  <p>会社紹介の後、以下の3ステップで「Playable First. Buzz Follows.」に着地させる構成を意図していた。</p>
+
+  <div class="flow-box no-break">
+    <div class="flow-step">
+      <div class="flow-num">①</div>
+      <div class="flow-content">
+        <div class="flow-main">TGSは情報イベントである</div>
+        <div class="flow-sub">来場者26万人 vs 番組視聴者600万人。TGSは会場外で読まれ続けるイベント。</div>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">
+      <div class="flow-num">②</div>
+      <div class="flow-content">
+        <div class="flow-main">EDFは体験して初めて価値が伝わる</div>
+        <div class="flow-sub">物量の恐怖と爽快感は、映像や静的展示では伝わらない。</div>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">
+      <div class="flow-num">③</div>
+      <div class="flow-content">
+        <div class="flow-main">だから Playable First. Buzz Follows.</div>
+        <div class="flow-sub">試遊を中心に、待機列・ステージ・配信・SNS・運営を全設計。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 03 -->
+<div class="section page-break">
+  <div class="section-header">
+    <span class="section-num">SECTION 03</span>
+    <span class="section-title">発見された問題点（論理の飛躍と矛盾）</span>
+  </div>
+
+  <div class="subsection no-break">
+    <div class="subsection-title">問題① 「TGSは情報イベント」が最初のスクリプトに存在しなかった</div>
+    <p>意図した3ステップのうち最初のステップが完全に抜けていた。根拠なしに「だから試遊が重要」と言っても、D3P側には「なぜ？」の疑問が残る。</p>
+  </div>
+
+  <div class="subsection no-break">
+    <div class="subsection-title">問題② ②と①の間に矛盾がある</div>
+
+    <table>
+      <tr>
+        <th>主張</th>
+        <th>含意</th>
+      </tr>
+      <tr>
+        <td>TGSは情報イベント（視聴者600万人）</td>
+        <td>会場に来ない人に届けることが重要</td>
+      </tr>
+      <tr>
+        <td>EDFは触って初めて価値が伝わる</td>
+        <td>来場して体験しないと価値が伝わらない</td>
+      </tr>
+    </table>
+
+    <div class="warning-box">
+      <div class="warning-label">D3P視点での疑問</div>
+      <div class="warning-text">「触らないとわからないゲームなのに、なんで会場外の600万人に届けようとしているの？」<br>この矛盾を解消する接続の一文がないと、論理が崩れる。</div>
+    </div>
+  </div>
+
+  <div class="subsection no-break">
+    <div class="subsection-title">問題③「Playable First. Buzz Follows.」がどこにも着地していなかった</div>
+    <p>最終スクリプトが「試遊を削らない。試遊を目立たせる。試遊を語らせる。」で終わっており、コンセプトフレーズが一度も出てこなかった。</p>
+  </div>
+</div>
+
+<!-- SECTION 04 -->
+<div class="section page-break">
+  <div class="section-header">
+    <span class="section-num">SECTION 04</span>
+    <span class="section-title">矛盾の解消：ブリッジの考え方</span>
+  </div>
+
+  <div class="key-insight no-break">
+    <div class="key-insight-label">CORE INSIGHT</div>
+    <div class="key-insight-text">EDFの価値は映像では伝わらない。<br>だからこそ、触った人の体験が<br>最も説得力のある情報になる。</div>
+  </div>
+
+  <p>この一文が矛盾を解消する。「触らないと伝わらない」という制約が、逆に「体験者の言葉こそが最強の情報」という強みに転換される。</p>
+
+  <div class="flow-box no-break">
+    <div class="flow-step">
+      <div class="flow-num">①</div>
+      <div class="flow-content">
+        <div class="flow-main">TGSは情報イベント</div>
+        <div class="flow-sub">来場者26万 vs 視聴者600万</div>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">
+      <div class="flow-num">②</div>
+      <div class="flow-content">
+        <div class="flow-main">EDFは触って初めて価値が伝わる</div>
+        <div class="flow-sub">展示では伝わらない</div>
+      </div>
+    </div>
+    <div class="flow-arrow">↓ ← ブリッジ</div>
+    <div class="flow-step">
+      <div class="flow-num">③</div>
+      <div class="flow-content">
+        <div class="flow-main">だから「触った人の体験」が最も説得力のある情報になる</div>
+        <div class="flow-sub">SNSでも、口コミでも、会話でも。体験者が伝道師になる。</div>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">
+      <div class="flow-num">④</div>
+      <div class="flow-content">
+        <div class="flow-main">Playable First. Buzz Follows.</div>
+        <div class="flow-sub">試遊を起点に全体を設計する</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 05 -->
+<div class="section page-break">
+  <div class="section-header">
+    <span class="section-num">SECTION 05</span>
+    <span class="section-title">最も重要な指摘：SNS論 vs EDF論</span>
+  </div>
+
+  <p>ブリッジの実装として「SNS投稿が信頼される情報だから」という説明を使っていたが、これはD3P・特に岡島P相手では弱い。</p>
+
+  <div class="compare-grid no-break">
+    <div class="compare-card bad">
+      <div class="compare-label">△ SNS論（広告代理店的）</div>
+      <div class="compare-text">「試遊後の興奮したSNS投稿。配信に映る驚きの表情。それはPR動画より何倍も信頼される情報です。」<br><br>→ マーケティング理論。岡島Pには刺さらない。</div>
+    </div>
+    <div class="compare-card good">
+      <div class="compare-label">◎ EDF論（IP理解）</div>
+      <div class="compare-text">「EDFは20年以上にわたり、ファン同士が体験を語り合いながら愛され続けてきたタイトルだと理解しています。」<br><br>→ IP理解の表明。岡島Pへのリスペクトになる。</div>
+    </div>
+  </div>
+
+  <div class="warning-box no-break">
+    <div class="warning-label">根本的な違い</div>
+    <div class="warning-text">
+      D3Pが選ぶのは「SNSが得意なマーケティング会社」ではなく「EDFを理解しているパートナー」。<br>
+      だから「SNSが重要」より「EDFファンはこう動く」の方が刺さる。
+    </div>
+  </div>
+
+  <div class="subsection no-break">
+    <div class="subsection-title">あわせて修正した言い切り表現</div>
+    <table>
+      <tr>
+        <th>修正前</th>
+        <th>修正後</th>
+        <th>理由</th>
+      </tr>
+      <tr>
+        <td>「触った人は黙っていられません」</td>
+        <td>「語り合いながら愛され続けてきた」</td>
+        <td>岡島Pから「全員が語るわけじゃない」と返される可能性</td>
+      </tr>
+      <tr>
+        <td>「支持を広げてきたタイトル」</td>
+        <td>「愛され続けてきたタイトル」</td>
+        <td>EDFが続いた理由はゲーム性・協力プレイ・世界観など複数ある。断言は危険。</td>
+      </tr>
+      <tr>
+        <td>「課題として設定しました」</td>
+        <td>「設計するべきだと考えました」</td>
+        <td>「課題設定」は資料語。プレゼンで話す言葉に直す。</td>
+      </tr>
+      <tr>
+        <td>「面白かった」（引用例）</td>
+        <td>削除</td>
+        <td>どのゲームでも言える。EDFらしい言葉だけ残す。</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="subsection no-break">
+    <div class="subsection-title">「語り合いながら愛され続けてきた」が優れている理由</div>
+    <table>
+      <tr>
+        <th>語句</th>
+        <th>役割</th>
+      </tr>
+      <tr>
+        <td>「語り合いながら」</td>
+        <td>今回のBuzz設計への論理的接続を保つ</td>
+      </tr>
+      <tr>
+        <td>「愛され続けてきた」</td>
+        <td>岡島Pへのリスペクト。過剰な主張を避ける。</td>
+      </tr>
+      <tr>
+        <td>「理解しています」</td>
+        <td>説明ではなく「我々はそう分析した」という表明になる</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 06 -->
+<div class="section page-break">
+  <div class="section-header">
+    <span class="section-num">SECTION 06</span>
+    <span class="section-title">表現の精度を上げた変更点</span>
+  </div>
+
+  <div class="subsection no-break">
+    <div class="subsection-title">「全部資料に戻れること」が安定感の根拠</div>
+    <p>プレゼンで一番強いのは「言い切りの強さ」ではなく、<strong>「その場で突っ込まれても全部資料に戻れること」</strong>。コンペなら特にこの安定感は重要。</p>
+    <div class="good-box">
+      <div class="good-label">チェックポイント</div>
+      <div class="good-text">
+        最終スクリプトの各要素は、すべて提案書の記述に対応している。<br>
+        ・「TGSは情報イベント」→ P2<br>
+        ・「展示ではなく体験によって価値が伝わる」→ P3「実際に遊んでこそ理解される」<br>
+        ・「試遊体験から生まれるポジティブな発信の最大化」→ P3<br>
+        ・「Playable First. Buzz Follows.」→ P5
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection no-break">
+    <div class="subsection-title">「SNSや動画、そして人づての会話」という表現</div>
+    <p>「SNSや動画、口コミを通じて」から変更。「人づての会話」を入れることで、「SNS担当会社」という印象から「ファンコミュニティを理解している会社」へ寄せる。提案の実態が<strong>「SNS施策」ではなく「口コミの起点を作ること」</strong>であるため、言葉もそれに合わせる。</p>
+  </div>
+
+  <div class="subsection no-break">
+    <div class="subsection-title">EDFらしい引用例を厳選する</div>
+    <div class="compare-grid">
+      <div class="compare-card bad">
+        <div class="compare-label">❌ 削除した言葉</div>
+        <div class="compare-text">「面白かった」<br><br>理由：どのゲームにも当てはまる。EDFである必要がない。</div>
+      </div>
+      <div class="compare-card good">
+        <div class="compare-label">✓ 残した言葉</div>
+        <div class="compare-text">「敵が多すぎる」<br>「またEDFがやりたくなった」<br><br>理由：EDFの体験にしか出てこない言葉。岡島Pが「分かってる」と感じる。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 07 -->
+<div class="section page-break">
+  <div class="section-header">
+    <span class="section-num">SECTION 07</span>
+    <span class="section-title">最終スクリプト（確定版）</span>
+  </div>
+
+  <p style="margin-bottom:14px;">以下が、会社紹介から「Playable First. Buzz Follows.」着地までの確定スクリプト。</p>
+
+  <div class="script-box no-break">
+    <p>本日はお時間をいただきありがとうございます。<br>
+    GAソリューションズの一森です。</p>
+
+    <p style="margin-top:14px;">まず最初に、GAソリューションズの役割について簡単にご説明します。</p>
+
+    <p>私たちはゲーム業界に特化したマーケティング・プロモーション会社です。<br>
+    イベント施工会社ではなく、ゲームタイトルをどう認知させ、どう話題化し、<br>
+    どう販売につなげるかを考える立場です。</p>
+
+    <p>今回、空間設計や施工・現場運営はポマト・プロ様が担当します。<br>
+    GAソリューションズは、D3P様の出展目的を整理し、<br>
+    試遊体験・ステージ・配信・SNS・運営導線を含めた全体設計を担当しています。</p>
+
+    <p>TGSではTHQ Nordic様、NEXON様のブースで<br>
+    企画立案から運営ディレクションまで担当してまいりました。</p>
+
+    <p style="margin-top:14px;">本日はまず、ブースデザインの説明ではなく、<br>
+    <span class="script-accent">今回の提案を評価いただく上での考え方</span>からお話しさせてください。</p>
+
+    <div style="margin-top: 18px; border-top: 1px solid rgba(136,255,85,0.3); padding-top: 18px;">
+      <p>TGSは会場だけで完結するイベントではありません。<br>
+      来場者が体験したことが、SNSや動画、そして人づての会話を通じて<br>
+      会期後も広がっていく<span class="script-accent">情報イベント</span>だと考えています。</p>
+
+      <p style="margin-top:12px;">一方でEDF6.1×2は、<span class="script-accent">展示ではなく体験によって価値が伝わるタイトル</span>です。</p>
+
+      <p>EDFは20年以上にわたり、ファン同士が体験を語り合いながら<br>
+      愛され続けてきたタイトルだと<span class="script-accent">理解しています</span>。</p>
+
+      <p style="margin-top:12px;">そこで私たちは、試遊そのものだけではなく、<br>
+      <span class="script-accent">その体験が周囲へどう伝わっていくかまで含めて設計する</span>べきだと考えました。</p>
+
+      <p style="margin-top:12px;">体験した人が、</p>
+      <p class="script-quote">「敵が多すぎる」</p>
+      <p class="script-quote">「またEDFがやりたくなった」</p>
+      <p>と誰かに話したくなる。そんな状態を作ることです。</p>
+
+      <p style="margin-top:16px;">だから今回のコンセプトは、</p>
+      <span class="script-concept">Playable First. Buzz Follows.</span>
+      <p style="margin-top:8px; font-size: 12pt; color: rgba(136,255,85,0.9);">試遊が主役。熱量が拡散する。</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 08 -->
+<div class="section page-break">
+  <div class="section-header">
+    <span class="section-num">SECTION 08</span>
+    <span class="section-title">当日の最重要アドバイス</span>
+  </div>
+
+  <div class="key-insight no-break">
+    <div class="key-insight-label">MOST IMPORTANT</div>
+    <div class="key-insight-text">文章の磨き込みは終わった。<br>今夜やることは声に出して3回読むことだけ。<br><br>プレゼンは文章の完成度より、<br>一森さん本人が自然に話しているかの方が何倍も重要。</div>
+  </div>
+
+  <div class="subsection no-break" style="margin-top: 24px;">
+    <div class="subsection-title">当日、言わないこと（禁止リスト）</div>
+    <table>
+      <tr>
+        <th>言わないこと</th>
+        <th>理由</th>
+      </tr>
+      <tr>
+        <td>「3,640名は確実に回せます」</td>
+        <td>過剰保証。「設計上の処理キャパシティ」と言う。</td>
+      </tr>
+      <tr>
+        <td>「KOLで盛り上げます」</td>
+        <td>競合の土俵に乗る。オプションとして位置づける。</td>
+      </tr>
+      <tr>
+        <td>「ポマトが全部やります」</td>
+        <td>GASの存在価値が消える。</td>
+      </tr>
+      <tr>
+        <td>「造作は弱いですが」</td>
+        <td>弱点を自分から確定させる必要はない。</td>
+      </tr>
+      <tr>
+        <td>「岡島司令官で決定です」</td>
+        <td>呼称・演出はD3P様と相談前提にする。</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="subsection no-break" style="margin-top: 24px;">
+    <div class="subsection-title">冒頭で評価軸を握るための5つのキーワード</div>
+    <ul class="checklist">
+      <li>今回の評価軸はパースの派手さではなく、試遊を5日間止めない設計です。</li>
+      <li>KOL・配信は主役ではなく、試遊体験を増幅する役割です。</li>
+      <li>ライブ配信は、会場外の既存ファンに試遊価値を届けるためのものです。</li>
+      <li>中東情勢リスク対応は、素材代替ではなく試遊体験を守る設計です。</li>
+      <li>D3P様が一番避けたいのは、試遊ができなくなることだと捉えています。</li>
+    </ul>
+  </div>
+
+  <div class="final-note no-break" style="margin-top: 24px;">
+    <strong>最後の一文（締めで使う）</strong><br><br>
+    本提案で守りたいのは、試遊を削らないこと、試遊を目立たせること、<br>
+    試遊を語らせること、そして試遊後の熱量を口コミにすることです。<br><br>
+    造作、ステージ、SNS、KOL、ノベルティはすべてそのための手段として設計しています。<br><br>
+    5日間、試遊を止めず、熱量を落とさず、会場外にも残す。<br>
+    そこまで含めて、GA Solutions / POMATPROチームはTGSブースを設計します。
+  </div>
+
+</div>
+
+</body>
+</html>
