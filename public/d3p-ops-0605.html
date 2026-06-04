@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>D3P TGS2026 コンペ — 想定Q&A</title>
+  <style>
+    @page { size: A4 portrait; margin: 12mm 14mm; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', sans-serif;
+      font-size: 10.5pt;
+      color: #1a1a1a;
+      line-height: 1.75;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 28px 24px;
+    }
+
+    /* ===== ヘッダー ===== */
+    header {
+      border-top: 5px solid #111;
+      border-bottom: 2px solid #111;
+      padding: 12px 0 10px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    header h1 {
+      font-size: 16pt;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
+    header .meta {
+      font-size: 8.5pt;
+      color: #555;
+      text-align: right;
+      line-height: 1.5;
+    }
+
+    /* ===== カテゴリ ===== */
+    .category { margin-bottom: 32px; }
+
+    .category-title {
+      font-size: 11pt;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      background: #111;
+      color: #fff;
+      padding: 6px 12px;
+      margin-bottom: 12px;
+    }
+
+    /* ===== Q&A カード ===== */
+    .qa-item {
+      margin-bottom: 12px;
+      border: 1px solid #bbb;
+      border-left: 4px solid #444;
+      page-break-inside: avoid;
+    }
+    .qa-item.warn { border-left-color: #b00; }
+    .qa-item.check { border-left-color: #d07000; }
+
+    .question {
+      background: #f2f2f2;
+      padding: 7px 12px;
+      font-weight: 700;
+      font-size: 10.5pt;
+      border-bottom: 1px solid #ddd;
+    }
+    .question::before {
+      content: 'Q　';
+      color: #444;
+      font-weight: 900;
+    }
+
+    .answer {
+      padding: 8px 12px;
+      font-size: 10pt;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 5px 12px 8px;
+      align-items: flex-start;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 8.5pt;
+      padding: 2px 8px;
+      border-radius: 2px;
+      line-height: 1.5;
+    }
+    .tag.note {
+      background: #fde8e8;
+      color: #b00;
+      border: 1px solid #f5b0b0;
+      font-weight: 700;
+    }
+    .tag.ref {
+      background: #f0f0f0;
+      color: #555;
+      border: 1px solid #ccc;
+    }
+    .tag.ok {
+      background: #e6f4ea;
+      color: #1a6030;
+      border: 1px solid #9ecfb0;
+      font-weight: 700;
+    }
+
+    /* ===== 免責フッター ===== */
+    footer {
+      margin-top: 36px;
+      border-top: 1px solid #ccc;
+      padding-top: 8px;
+      font-size: 8pt;
+      color: #888;
+    }
+
+    /* ===== 印刷 ===== */
+    @media print {
+      body { padding: 0; max-width: 100%; }
+      header { margin-bottom: 20px; }
+      .category { break-inside: avoid; }
+      .qa-item { break-inside: avoid; }
+      footer { margin-top: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>D3P TGS2026 コンペ — 想定Q&amp;A</h1>
+  <div class="meta">
+    作成：GA Solutions 一森<br>
+    2026.6.5 &nbsp;|&nbsp; CONFIDENTIAL
+  </div>
+</header>
+
+
+<!-- ===== 01 ===== -->
+<div class="category">
+  <div class="category-title">01 &nbsp; ブース動線・試遊誘導</div>
+
+  <div class="qa-item">
+    <div class="question">試遊待機列への誘導はどのように行いますか？</div>
+    <div class="answer">
+      ブース入口（ゲートH3900）にスタッフを配置し、来場者を希望タイトル別（PS5：EDF6.1x2 ／ SW2：EDF5・EDF6）に案内します。待機列に並んでいただいたタイミングでスタッフがQRコードを提示し、ブラウザゲーム「EDF"非公式"隊員訓練」を体験しながらお待ちいただく設計です。一般公開日の待機時間は約30分（60名×3回転）を想定しており、上限を超えた場合は整理券をお渡しして指定時間にご来場いただく形で対応します。
+    </div>
+    <div class="tag-row">
+      <span class="tag ref">根拠：提案書 P.13 試遊参加者フロー</span>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="question">待機列の最大収容人数はどれくらいですか？</div>
+    <div class="answer">
+      試遊待機列はPS5・SW2別で合計約60名（各30名程度）を想定しています。ブース外約2mを使用し、通路幅の1/3以内に収まるよう設計します。上限を超えた際は整理券配布へ切り替えます。フォトスポット待機列は別途約30名で、整理券対応はありません。
+    </div>
+    <div class="tag-row">
+      <span class="tag ref">根拠：提案書 P.23 動線計画</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== 02 ===== -->
+<div class="category">
+  <div class="category-title">02 &nbsp; 控室・運営環境</div>
+
+  <div class="qa-item warn">
+    <div class="question">控室はどこに設けますか？登壇者の待機場所は？</div>
+    <div class="answer">
+      現在のブースレイアウト（20小間）の中に登壇者・出演者用の控室スペースを確保することが難しい状況です。別途、主催者控室としてTGS事務局エリアをご手配いただけますと幸いです。
+    </div>
+    <div class="tag-row">
+      <span class="tag note">ネガティブ回答：正直に伝える</span>
+      <span class="tag ref">根拠：提案書 P.10 図面（バックヤードのみ記載）</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== 03 ===== -->
+<div class="category">
+  <div class="category-title">03 &nbsp; 試遊体験の最大化・運営オペレーション</div>
+
+  <div class="qa-item">
+    <div class="question">試遊台20台の稼働率をどう維持しますか？</div>
+    <div class="answer">
+      各試遊台に専任アテンダントを配置します（EDF6.1x2：4P6名、EDF5：2P3名、EDF6：2P3名）。説明・清掃・入替を1組あたり5分以内でオペレーションし、試遊Dが全体進行を一元管理します。トラブル発生時は庶務・遊軍スタッフ（6名）が即時対応します。稼働率の維持は問題ありません。
+    </div>
+    <div class="tag-row">
+      <span class="tag ok">問題なし</span>
+      <span class="tag ref">根拠：提案書 P.13・P.24 スタッフ配置</span>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="question">3,640名という試遊想定の根拠を教えてください</div>
+    <div class="answer">
+      試遊台20台を基準に算出しています。ビジネスデイ（2日）は15分サイクル（体験10分＋説明・入替5分）で560名／日、一般公開日（3日）は10分サイクル（体験5分＋説明・入替5分）で840名／日。560名×2日＋840名×3日＝3,640名です。
+    </div>
+    <div class="tag-row">
+      <span class="tag ref">根拠：提案書 P.13 試遊時間と人数の考え方</span>
+    </div>
+  </div>
+
+  <div class="qa-item check">
+    <div class="question">CERO-D（17歳以上）の年齢確認は自己申告のみで問題ありませんか？</div>
+    <div class="answer">
+      前回TGS出展時にも同様の自己申告方式で実施しているものと認識しております。
+    </div>
+    <div class="tag-row">
+      <span class="tag note">要確認：前回実施実績を事前に把握して臨む</span>
+      <span class="tag ref">根拠：提案書 P.13 待機列の注釈</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== 04 ===== -->
+<div class="category">
+  <div class="category-title">04 &nbsp; デジタルコンテンツ・フォトスポット</div>
+
+  <div class="qa-item">
+    <div class="question">QRミニゲームは4,000名超が同時アクセスしても問題ありませんか？</div>
+    <div class="answer">
+      本日お見せしているものはデモ版です。本番環境では十分なキャパシティのサーバーを契約しますので、アクセス集中による障害は想定しておりません。また初回起動後はオフライン状態でも動作する設計のため、会場内の通信混雑にも対応しています。
+    </div>
+    <div class="tag-row">
+      <span class="tag ok">本番は別途サーバー契約</span>
+      <span class="tag ref">根拠：提案書 P.14 注釈「通信はブラウザ読み込み時のみ」</span>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="question">フォトスポットの顔合成はどのように実装しますか？技術的な担保は？</div>
+    <div class="answer">
+      現時点でデモ版が実装済みです。実際に体験いただけます。本番仕様はD3P様のご要望をお伺いしながら詰めてまいります。
+    </div>
+    <div class="tag-row">
+      <span class="tag ok">デモ実装済み（edf-face-photo）</span>
+      <span class="tag ref">根拠：提案書 P.15 デジタルフォトスポット</span>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="question">フォトスポットの体験人数840名の根拠を教えてください</div>
+    <div class="answer">
+      1組あたり5分（体験3分＋入替2分）を想定。1時間あたり12組×1日7時間＝84組（168名）×5日間＝420組（840名）で算出しています。
+    </div>
+    <div class="tag-row">
+      <span class="tag ref">根拠：提案書 P.12 フォトスポット欄</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== 05 ===== -->
+<div class="category">
+  <div class="category-title">05 &nbsp; 予算・コスト</div>
+
+  <div class="qa-item check">
+    <div class="question">予算3,500万円の内訳を教えてください。JAPANNEXTコラボによる削減効果は？</div>
+    <div class="answer">
+      別途お手元に見積もりをご用意しております。JAPANNEXTとのコラボレーションによるモニターのコスト削減額についても資料がございます。
+    </div>
+    <div class="tag-row">
+      <span class="tag note">要確認・当日手元に見積もりを持参</span>
+      <span class="tag ref">根拠：提案書 P.29 モニターコラボレーション</span>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="question">中東情勢の影響で造作費用は上がりますか？納品は間に合いますか？</div>
+    <div class="answer">
+      6月中に手配をかけられれば在庫を確保し製作可能な体制を整えています。床パンチカーペットをシステムパネルに変更するなどリスクの高い資材を使わない設計にしており、見た目・品質への影響は最小限に抑える方針です。
+    </div>
+    <div class="tag-row">
+      <span class="tag ref">根拠：提案書 P.31 中東情勢のリスクと対策</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== 06 ===== -->
+<div class="category">
+  <div class="category-title">06 &nbsp; キャスト・登壇者</div>
+
+  <div class="qa-item">
+    <div class="question">インフルエンサー登壇者の費用とスケジュール確保状況を教えてください</div>
+    <div class="answer">
+      ご提案しているインフルエンサーの概算費用は以下の通りです（X投稿＋1日出演料）。まお：50万円／day、塩：35万円／day、なな湖なな湖：60万円／day。MCの鯉池希実については見積もりに費用を含んでおります。出演者スケジュールは受注確定後に確認いたします。
+    </div>
+    <div class="tag-row">
+      <span class="tag ok">概算：まお 50万・塩 35万・なな湖 60万（各/day、X投稿込み）</span>
+      <span class="tag ref">根拠：提案書 P.28 追加ステージ登壇者</span>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="question">岡島Pの登壇・「岡島司令官」という演出は確定していますか？</div>
+    <div class="answer">
+      D3P様のご判断に委ねております。本提案ではステージ登壇者のイメージとして設計しておりますが、呼称・演出を含め受注確定後にご相談させてください。
+    </div>
+    <div class="tag-row">
+      <span class="tag ref">根拠：提案書 P.19 登壇者イメージ</span>
+    </div>
+  </div>
+</div>
+
+
+<footer>
+  本資料はGA Solutions社内資料です。外部への持ち出し・共有はご遠慮ください。
+</footer>
+
+</body>
+</html>
