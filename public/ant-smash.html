@@ -366,7 +366,11 @@ function speakTaisa(text) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'ja-JP'; u.pitch = 0.75; u.rate = 0.9;
+  u.lang = 'ja-JP'; u.rate = 0.9;
+  const voices = window.speechSynthesis.getVoices();
+  const male = voices.find(v => v.lang.startsWith('ja') && /Otoya|男性|Male|otoya/i.test(v.name));
+  if (male) { u.voice = male; u.pitch = 0.85; }
+  else { u.pitch = 0.5; }
   window.speechSynthesis.speak(u);
 }
 
