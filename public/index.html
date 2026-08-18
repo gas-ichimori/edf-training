@@ -262,10 +262,18 @@ body::after {
   <div id="boot-status">起立！号令を待て…</div>
 
   <div class="training-list locked">
-    <a class="training-btn" href="/runner.html">
+    <a class="training-btn" href="https://gas-ichimori.github.io/frontline-held/">
       <div class="training-num">TRAINING-01</div>
       <div class="training-info">
         <div class="training-name">回避訓練</div>
+        <div class="training-desc">巨大蟻を避けて突き進め！</div>
+      </div>
+      <div class="training-arrow">▶</div>
+    </a>
+    <a class="training-btn" id="hidden-runner-btn" href="/runner.html" style="display:none;">
+      <div class="training-num">TRAINING-00</div>
+      <div class="training-info">
+        <div class="training-name">回避訓練（旧）</div>
         <div class="training-desc">巨大蟻を避けて突き進め！</div>
       </div>
       <div class="training-arrow">▶</div>
@@ -325,6 +333,19 @@ function playBtnClick() {
 document.querySelectorAll('.training-btn').forEach(btn => {
   btn.addEventListener('click', () => playBtnClick());
   btn.addEventListener('touchstart', () => playBtnClick(), { passive: true });
+});
+
+// 隠しメニュー: 大佐を5回連続タップすると旧・回避訓練ボタンを表示
+let taisaTapCount = 0;
+let taisaTapTimer = null;
+document.getElementById('taisa-img').addEventListener('click', () => {
+  taisaTapCount++;
+  clearTimeout(taisaTapTimer);
+  taisaTapTimer = setTimeout(() => { taisaTapCount = 0; }, 2000);
+  if (taisaTapCount >= 5) {
+    taisaTapCount = 0;
+    document.getElementById('hidden-runner-btn').style.display = '';
+  }
 });
 
 // ===== 起動シーケンス: TOPページ + 殲滅訓練のアート読込 + タップでボタン解禁 =====
