@@ -582,8 +582,8 @@
       navigator.serviceWorker.register('/frontline-held/sw.js').catch(() => {});
     }
 
-    // スマホのみ：ローディング画面を表示してアセット読み込み完了を待つ
-    if (isMobile()) {
+    // ローディング画面を表示してアセット読み込み完了を待つ（PC・スマホ共通）
+    {
       if (typeof paused !== 'undefined') paused = true;
       document.getElementById('loadingOverlay').style.display = 'flex';
 
