@@ -302,6 +302,11 @@ fetch('/api/counter', { method: 'POST' })
     document.getElementById('counter-num').textContent = '----';
   });
 
+// オフラインキャッシュ登録
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+
 // ボタンクリック音
 let audioCtx = null;
 function playBtnClick() {
