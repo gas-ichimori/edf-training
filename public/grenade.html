@@ -342,7 +342,7 @@ body::after {
     </div>
     <div id="res-msg"></div>
     <div class="res-btns">
-      <button class="res-btn btn-share" id="btn-share">仲間に広める</button>
+      <button class="res-btn btn-share" id="btn-share">次の任務に就く為、証明書を発行<br><span style="font-size:9px;opacity:0.75;letter-spacing:1px;">Next Mission Certificate Issued</span></button>
       <button class="res-btn btn-retry" id="btn-retry">引き続き訓練を行う</button>
       <button class="res-btn btn-hub"   id="btn-hub">別の訓練をする</button>
     </div>
@@ -696,11 +696,97 @@ startBtn.addEventListener('click', onStartPress);
 startBtn.addEventListener('touchend', e => { e.preventDefault(); onStartPress(); }, { passive: false });
 
 addTap('btn-throw', () => triggerThrow());
-addTap('btn-share', () => {
+
+function loadImage(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+async function makeCertificate() {
+  const [certBg, edfIcon, countFrame, stamp] = await Promise.all([
+    loadImage('/frontline-held/assets/images/cert_bg.png'),
+    loadImage('/frontline-held/assets/images/edf_icon.png'),
+    loadImage('/frontline-held/assets/images/cert_count_frame.png'),
+    loadImage('/frontline-held/assets/images/cert_stamp.png'),
+  ]);
+  const cleared = resultSec >= CLEAR_MIN && resultSec < CLEAR_MAX;
+
+  const cc = document.createElement('canvas');
+  cc.width = 405; cc.height = 720;
+  const c = cc.getContext('2d');
+  c.fillStyle='#07070f'; c.fillRect(0,0,405,720);
+  if (certBg) c.drawImage(certBg, 0, 0, 405, 720);
+  c.textAlign='center'; c.textBaseline='middle';
+
+  c.fillStyle='#ffdd44'; c.font='bold 20px sans-serif';
+  c.fillText('地球防衛軍 作戦報告書', 202, 44);
+  c.fillStyle='#aa8833'; c.font='10px sans-serif';
+  c.fillText('EARTH DEFENSE FORCE  MISSION REPORT', 202, 64);
+  c.strokeStyle='#554422'; c.lineWidth=1;
+  c.beginPath(); c.moveTo(28,76); c.lineTo(377,76); c.stroke();
+
+  if (edfIcon) c.drawImage(edfIcon, 202-70, 82, 140, 109);
+
+  c.fillStyle='#88ff88'; c.font='bold 14px monospace';
+  c.fillText('♟ EDF-007', 202, 205);
+  c.fillStyle='#888'; c.font='11px sans-serif';
+  c.fillText(`訓練種別: 5秒感覚訓練`, 202, 223);
+  c.strokeStyle='#332211'; c.lineWidth=1;
+  c.beginPath(); c.moveTo(28,235); c.lineTo(377,235); c.stroke();
+
+  c.fillStyle='#ffaa44'; c.font='bold 13px sans-serif';
+  c.fillText('記録タイム', 202, 253);
+  if (countFrame) c.drawImage(countFrame, 12, 261, 381, 152);
+  c.fillStyle='#ffffff'; c.font='bold 36px monospace';
+  c.fillText(`${resultSec.toFixed(3)} 秒`, 202, 337);
+
+  c.strokeStyle='#554422'; c.lineWidth=1;
+  c.beginPath(); c.moveTo(28,421); c.lineTo(377,421); c.stroke();
+
+  c.fillStyle = cleared ? '#88ff88' : '#ff6666';
+  c.font='bold 30px sans-serif';
+  c.fillText(cleared ? 'MISSION CLEAR' : 'MISSION FAILED', 202, 510);
+  c.fillStyle='#aaa'; c.font='11px sans-serif';
+  c.fillText('目標: 5.000秒', 202, 545);
+
+  c.strokeStyle='#554422'; c.lineWidth=1;
+  c.beginPath(); c.moveTo(28,625); c.lineTo(377,625); c.stroke();
+
+  if (stamp) { c.save(); c.globalAlpha=0.82; c.drawImage(stamp, 202-48, 621, 96, 96); c.restore(); }
+
+  c.fillStyle='#665522'; c.font='10px sans-serif';
+  c.fillText('地球防衛軍 作戦司令部 認定  /  EDF OPERATIONS CERTIFIED', 202, 683);
+  c.fillStyle='#2a2a3a'; c.font='10px sans-serif';
+  c.fillText('#EDF  #D3P  #TGS2026', 202, 699);
+
+  return cc;
+}
+
+async function shareToX() {
+  const tweetText = `TGS2026 D3Pブース ${'◯◯'} の最前線基地へ応援求む！待機中の訓練システム"5秒感覚訓練"に挑戦！${resultSec.toFixed(3)}秒達成！（目標5.000秒） #EDF #D3P #TGS2026 #地球防衛軍`;
+  const canvas = await makeCertificate();
+  canvas.toBlob(async (blob) => {
+    const file = new File([blob], 'edf_certificate.png', { type:'image/png' });
+    if (navigator.canShare?.({ files:[file] })) {
+      try { await navigator.share({ text:tweetText, files:[file] }); return; } catch(e) {}
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href=url; a.download='edf_certificate.png'; a.click();
+    URL.revokeObjectURL(url);
+    setTimeout(() => {
+      window.open('https://x.com/intent/tweet?text='+encodeURIComponent(tweetText), '_blank');
+    }, 600);
+  }, 'image/png');
+}
+
+addTap('btn-share', async () => {
   sndClick();
-  const txt = `TGS2026 D3P ブース番号：◯◯ で地球防衛軍の訓練中！集合しろ！${resultSec.toFixed(3)}秒達成！（目標5.000秒） #EDF訓練 #TGS2026`;
-  if (navigator.share) navigator.share({ text: txt });
-  else { navigator.clipboard.writeText(txt).catch(()=>{}); alert('クリップボードにコピーしました！'); }
+  await shareToX();
 });
 addTap('btn-retry', () => { sndClick(); resetGame(); showScreen('screen-start'); });
 addTap('btn-hub',   () => { sndClick(); location.href = '/'; });
