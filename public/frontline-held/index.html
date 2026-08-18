@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="迎撃戦">
+  <meta name="theme-color" content="#000000">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/images/edf_icon.png">
+  <link rel="apple-touch-icon" href="assets/images/edf_icon.png">
+  <title>防衛前線 迎撃戦</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+    canvas { display: block; image-rendering: pixelated; }
+
+    /* ── スマホ全画面タップ画面 ── */
+    #fsOverlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 900;
+      background: #000;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    #fsOverlay .fs-bg {
+      position: absolute; inset: 0;
+      background-image: url('assets/images/ui/top_bg.png');
+      background-size: cover;
+      background-position: center top;
+      filter: brightness(0.45);
+    }
+    #fsOverlay .fs-content {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column;
+      align-items: center;
+      width: 100%; height: 100%;
+      justify-content: space-evenly;
+      padding-bottom: 28px;
+    }
+
+    /* ── 入隊選択メッセージ ── */
+    #fsOverlay .fs-select-msg {
+      font-size: 15px;
+      font-weight: bold;
+      color: #ffdd44;
+      text-shadow: 0 0 10px #ff8800, 0 0 20px #ff4400;
+      letter-spacing: 2px;
+      text-align: center;
+      padding: 0 12px;
+    }
+
+    /* ── ロゴ3ボタン横並び ── */
+    #fsOverlay .fs-logo-btns {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 0 8px;
+    }
+    #fsOverlay .fs-logo-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      flex: 1;
+      max-width: 110px;
+    }
+    #fsOverlay .fs-logo-btn img {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 0 12px rgba(255,150,0,0.6));
+      animation: icon-pulse 1.2s ease-in-out infinite;
+      display: block;
+    }
+    #fsOverlay .fs-logo-btn:nth-child(2) img { animation-delay: 0.4s; }
+    #fsOverlay .fs-logo-btn:nth-child(3) img { animation-delay: 0.8s; }
+
+    /* ── 点滅テキスト ── */
+    .fs-blink {
+      font-size: 15px;
+      font-weight: bold;
+      color: #ff2222;
+      text-shadow: 0 0 8px #ff0000;
+      letter-spacing: 2px;
+      animation: fs-blink 0.75s step-start infinite;
+    }
+    @keyframes fs-blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    @keyframes icon-pulse {
+      0%,100% { filter: drop-shadow(0 0 12px rgba(255,150,0,0.5)); transform: scale(1); }
+      50%     { filter: drop-shadow(0 0 30px rgba(255,210,0,1.0)); transform: scale(1.06); }
+    }
+
+    /* ── フッター著作権表記 ── */
+    #fsOverlay .fs-copyright {
+      position: absolute;
+      left: 0; right: 0;
+      bottom: 10px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.5px;
+      text-align: center;
+      padding: 0 12px;
+    }
+
+    /* ── ローディング画面 ── */
+    #loadingOverlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 950;
+      background: #000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      font-family: sans-serif;
+    }
+    #loadingOverlay .ld-title {
+      font-size: 22px;
+      font-weight: bold;
+      color: #ffdd44;
+      letter-spacing: 6px;
+      text-shadow: 0 0 12px #ff8800;
+      animation: fs-blink 1s step-start infinite;
+    }
+    #loadingOverlay .ld-bar-wrap {
+      width: 70%;
+      height: 10px;
+      background: #222;
+      border: 1px solid #554422;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    #loadingOverlay .ld-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #aa6600, #ffdd44);
+      border-radius: 5px;
+      transition: width 0.1s linear;
+    }
+    #loadingOverlay .ld-text {
+      font-size: 12px;
+      color: #886633;
+      letter-spacing: 2px;
+    }
+
+    /* ── チュートリアル ── */
+    #tutorialOverlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 910;
+      background: #000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    #tutorialOverlay img.tut-img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      object-position: center;
+      flex: 1;
+      min-height: 0;
+    }
+    #tutorialOverlay .tut-start {
+      width: 100%;
+      text-align: center;
+      padding: 14px 0 20px;
+      background: rgba(0,0,0,0.75);
+      font-family: sans-serif;
+      font-size: 18px;
+      font-weight: bold;
+      color: #44ff44;
+      letter-spacing: 3px;
+      animation: fs-blink 0.8s step-start infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── 横向き警告 ── */
+    #rotateOverlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 1000;
+      background: #000;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      color: #fff;
+      text-align: center;
+      font-family: sans-serif;
+    }
+    #rotateOverlay .rotate-icon { font-size: 56px; }
+    #rotateOverlay .rotate-msg  { font-size: 16px; color: #ffdd44; }
+    #rotateOverlay .rotate-sub  { font-size: 12px; color: #888; }
+
+    /* 横向き時に警告表示（スマホのみ） */
+    @media screen and (orientation: landscape) and (max-height: 500px) {
+      #rotateOverlay { display: flex !important; }
+
+    }
+
+
+    /* ── デバッグパネル ── */
+    #dbgPanel {
+      display: none;
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.92);
+      flex-direction: column; gap: 10px;
+      padding: 14px; overflow-y: auto;
+      font-family: monospace; font-size: 13px; color: #fff;
+    }
+    .dbg-title {
+      font-size: 15px; font-weight: bold; color: #ffdd00;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .dbg-close {
+      background: #333; color: #fff; border: 1px solid #666;
+      border-radius: 4px; padding: 2px 10px; cursor: pointer; font-size: 12px;
+    }
+    .dbg-section { border-top: 1px solid #333; padding-top: 8px; }
+    .dbg-label { color: #aaa; margin-bottom: 6px; font-size: 12px; }
+    .dbg-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .dbg-btn {
+      background: #222; color: #eee; border: 1px solid #555;
+      border-radius: 4px; padding: 6px 10px; cursor: pointer;
+      font-size: 12px; font-family: monospace;
+    }
+    .dbg-btn:active { background: #444; }
+    .dbg-btn.pause  { background: #1a3a1a; border-color: #44ff44; color: #44ff44; }
+    .dbg-btn.ant    { border-color: #ff5533; color: #ff5533; }
+    .dbg-btn.spider { border-color: #aa66ff; color: #aa66ff; }
+    .dbg-btn.bee    { border-color: #ffcc00; color: #ffcc00; }
+    .dbg-btn.spd    { border-color: #44aaff; color: #44aaff; }
+    .dbg-btn.atk    { border-color: #ff4444; color: #ff4444; }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- BGM: docs/assets/audio/bgm.mp3 を配置してください -->
+  <audio id="bgm" loop preload="auto">
+    <source src="assets/audio/bgm.mp3" type="audio/mpeg">
+    <source src="assets/audio/bgm.ogg" type="audio/ogg">
+  </audio>
+
+  <!-- スマホ：タップして全画面スタート -->
+  <div id="fsOverlay">
+    <div class="fs-bg" id="fsBg"></div>
+    <div class="fs-content">
+
+      <!-- 入隊選択メッセージ -->
+      <div class="fs-select-msg">貴殿の入隊したいアイコンを選択せよ！</div>
+
+      <!-- 🔻 ボタンを押せ 🔻 -->
+      <div class="fs-blink">🔻&nbsp;&nbsp;ボタンを押せ&nbsp;&nbsp;🔻</div>
+
+      <!-- ロゴ 3 ボタン -->
+      <div class="fs-logo-btns">
+        <button class="fs-logo-btn" onclick="startMobileGame('bg','HARD')">
+          <img src="assets/images/ui/logo1.png" alt="EDF 6.1×2">
+        </button>
+        <button class="fs-logo-btn" onclick="startMobileGame('bg_edf6_01','NORMAL')">
+          <img src="assets/images/ui/logo2.png" alt="EDF 6">
+        </button>
+        <button class="fs-logo-btn" onclick="startMobileGame(Math.random()<0.5?'bg_edf5_01':'bg_edf5_02','EASY')">
+          <img src="assets/images/ui/logo3.png" alt="EDF 5">
+        </button>
+      </div>
+
+      <!-- 🔺 PRESS THE BUTTON 🔺 -->
+      <div class="fs-blink">🔺&nbsp;&nbsp;PRESS THE BUTTON&nbsp;&nbsp;🔺</div>
+
+      <!-- 著作権表記 -->
+      <div class="fs-copyright">© D3PUBLISHER INC. All rights reserved.</div>
+
+    </div>
+  </div>
+
+  <!-- ローディング画面 -->
+  <div id="loadingOverlay">
+    <div class="ld-title">LOADING...</div>
+    <div class="ld-bar-wrap">
+      <div id="ldBar" class="ld-bar"></div>
+    </div>
+    <div id="ldText" class="ld-text">0 / 0</div>
+  </div>
+
+  <!-- チュートリアル -->
+  <div id="tutorialOverlay" onclick="tutorialTap()">
+    <img id="tutImg" class="tut-img" src="assets/images/ui/tutorial02-a.png" alt="チュートリアル">
+    <div id="tutBtn" class="tut-start">▶︎&nbsp;&nbsp;NEXT&nbsp;&nbsp;◀︎</div>
+  </div>
+
+  <!-- 横向き警告 -->
+  <div id="rotateOverlay">
+    <div class="rotate-icon">📱</div>
+    <div class="rotate-msg">端末を縦向きにしてください</div>
+    <div class="rotate-sub">PLEASE ROTATE YOUR DEVICE</div>
+  </div>
+
+  <!-- デバッグパネル -->
+  <div id="dbgPanel">
+
+    <div class="dbg-title">
+      🛠 DEBUG MODE
+      <button class="dbg-close" onclick="toggleDebug()">✕ 閉じる</button>
+    </div>
+
+    <!-- ゲーム制御 -->
+    <div class="dbg-section">
+      <div class="dbg-label">ゲーム制御</div>
+      <div class="dbg-row">
+        <button id="dbgPauseBtn" class="dbg-btn pause" onclick="togglePause()">⏸ PAUSE</button>
+        <button class="dbg-btn" style="border-color:#ff4444;color:#ff4444;" onclick="dbgGameOver()">💀 即GAME OVER</button>
+        <button class="dbg-btn" style="border-color:#44ff88;color:#44ff88;" onclick="dbgVictory()">🏆 5000撃破 ALL CLEAR</button>
+        <button class="dbg-btn" style="border-color:#aa44ff;color:#aa44ff;" onclick="dbgLoop()">♾️ STAGE∞ 突入</button>
+        <button class="dbg-btn" style="border-color:#ff00ff;color:#ff00ff;" onclick="dbgDwn()">⚠ DWN警告テスト</button>
+      </div>
+    </div>
+
+    <!-- ステージジャンプ -->
+    <div class="dbg-section">
+      <div class="dbg-label">ステージジャンプ</div>
+      <div class="dbg-row">
+        <button class="dbg-btn" style="border-color:#ffdd00;color:#ffdd00;" onclick="dbgGoto(1)">R2</button>
+        <button class="dbg-btn" style="border-color:#ffdd00;color:#ffdd00;" onclick="dbgGoto(3)">R3</button>
+        <button class="dbg-btn" style="border-color:#ffdd00;color:#ffdd00;" onclick="dbgGoto(4)">R4</button>
+        <button class="dbg-btn" style="border-color:#ffdd00;color:#ffdd00;" onclick="dbgGoto(6)">R5</button>
+        <button class="dbg-btn" style="border-color:#ff4444;color:#ff4444;" onclick="dbgGoto(2)">W1</button>
+        <button class="dbg-btn" style="border-color:#ff4444;color:#ff4444;" onclick="dbgGoto(5)">W2</button>
+        <button class="dbg-btn" style="border-color:#ff4444;color:#ff4444;" onclick="dbgGoto(7)">LAST</button>
+        <button class="dbg-btn" style="border-color:#aa44ff;color:#aa44ff;" onclick="dbgGoto(3,true)">∞ R3</button>
+      </div>
+    </div>
+
+    <!-- 攻撃力 -->
+    <div class="dbg-section">
+      <div class="dbg-label">攻撃力 (ATK: <span id="dbgAtk">-</span>)</div>
+      <div class="dbg-row">
+        <button class="dbg-btn atk" onclick="dbgAtk(1)">＋1</button>
+        <button class="dbg-btn atk" onclick="dbgAtk(5)">＋5</button>
+        <button class="dbg-btn atk" onclick="dbgAtk(-1)">－1</button>
+        <button class="dbg-btn atk" onclick="dbgAtk(-5)">－5</button>
+      </div>
+    </div>
+
+    <!-- 弾速 -->
+    <div class="dbg-section">
+      <div class="dbg-label">弾速 (SPD: <span id="dbgSpd">-</span>)</div>
+      <div class="dbg-row">
+        <button class="dbg-btn spd" onclick="dbgSpd(1)">＋1</button>
+        <button class="dbg-btn spd" onclick="dbgSpd(5)">＋5</button>
+        <button class="dbg-btn spd" onclick="dbgSpd(-1)">－1</button>
+        <button class="dbg-btn spd" onclick="dbgSpd(-5)">－5</button>
+      </div>
+    </div>
+
+    <!-- バースト連射数 -->
+    <div class="dbg-section">
+      <div class="dbg-label">バースト連射数 (BRS: <span id="dbgBrs">-</span>)</div>
+      <div class="dbg-row">
+        <button class="dbg-btn" style="border-color:#44ff66;color:#44ff66;" onclick="dbgBurstAdj(1)">＋1</button>
+        <button class="dbg-btn" style="border-color:#ff6644;color:#ff6644;" onclick="dbgBurstAdj(-1)">－1</button>
+      </div>
+    </div>
+
+    <!-- 蟻スポーン -->
+    <div class="dbg-section">
+      <div class="dbg-label">蟻 スポーン</div>
+      <div class="dbg-row">
+        <button class="dbg-btn ant" onclick="dbgSpawn('ant_s')">🐜 小</button>
+        <button class="dbg-btn ant" onclick="dbgSpawn('ant_m')">🐜 中</button>
+        <button class="dbg-btn ant" onclick="dbgSpawn('ant_l')">🐜 大</button>
+      </div>
+    </div>
+
+    <!-- 蜘蛛スポーン -->
+    <div class="dbg-section">
+      <div class="dbg-label">蜘蛛 スポーン</div>
+      <div class="dbg-row">
+        <button class="dbg-btn spider" onclick="dbgSpawn('spider_s')">🕷 小</button>
+        <button class="dbg-btn spider" onclick="dbgSpawn('spider_m')">🕷 中</button>
+        <button class="dbg-btn spider" onclick="dbgSpawn('spider_l')">🕷 大</button>
+      </div>
+    </div>
+
+    <!-- 蜂スポーン -->
+    <div class="dbg-section">
+      <div class="dbg-label">蜂 スポーン</div>
+      <div class="dbg-row">
+        <button class="dbg-btn bee" onclick="dbgSpawn('bee_s')">🐝 小</button>
+        <button class="dbg-btn bee" onclick="dbgSpawn('bee_m')">🐝 中</button>
+        <button class="dbg-btn bee" onclick="dbgSpawn('bee_l')">🐝 大</button>
+      </div>
+    </div>
+
+    <!-- 敵スピード倍率（種別） -->
+    <div class="dbg-section">
+      <div class="dbg-label">敵スピード倍率</div>
+      <div class="dbg-row" style="flex-direction:column;gap:4px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="dbg-btn ant" style="min-width:40px;text-align:center;cursor:default;">🐜蟻</span>
+          <span id="dbgSpd_ant" style="color:#ff5533;min-width:36px;">1.00x</span>
+          <button class="dbg-btn ant" onclick="dbgTypeSpd('ant',0.1)">＋</button>
+          <button class="dbg-btn ant" onclick="dbgTypeSpd('ant',-0.1)">－</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="dbg-btn spider" style="min-width:40px;text-align:center;cursor:default;">🕷蜘蛛</span>
+          <span id="dbgSpd_spider" style="color:#aa66ff;min-width:36px;">1.00x</span>
+          <button class="dbg-btn spider" onclick="dbgTypeSpd('spider',0.1)">＋</button>
+          <button class="dbg-btn spider" onclick="dbgTypeSpd('spider',-0.1)">－</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="dbg-btn bee" style="min-width:40px;text-align:center;cursor:default;">🐝蜂</span>
+          <span id="dbgSpd_bee" style="color:#ffcc00;min-width:36px;">1.00x</span>
+          <button class="dbg-btn bee" onclick="dbgTypeSpd('bee',0.1)">＋</button>
+          <button class="dbg-btn bee" onclick="dbgTypeSpd('bee',-0.1)">－</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 間隔（グローバルoffset） -->
+    <div class="dbg-section">
+      <div class="dbg-label">間隔オフセット: <span id="dbgIntervalOfsVal">+0ms</span></div>
+      <div class="dbg-row">
+        <button class="dbg-btn" onclick="dbgIntervalOffset(-10)">－10ms</button>
+        <button class="dbg-btn" onclick="dbgIntervalOffset(10)">＋10ms</button>
+      </div>
+    </div>
+
+    <!-- パワーアップMAX設定 -->
+    <div class="dbg-section">
+      <div class="dbg-label">パワーアップMAX設定</div>
+      <div style="font-size:11px;color:#888;margin-bottom:4px;">1つMAX時 batch:<span id="dbgMaxBatch0">+0</span> 間隔:<span id="dbgMaxInterval0">+0ms</span></div>
+      <div class="dbg-row" style="margin-bottom:6px;">
+        <button class="dbg-btn" onclick="dbgMaxBatch(0,1)">batch＋1</button>
+        <button class="dbg-btn" onclick="dbgMaxBatch(0,-1)">batch－1</button>
+        <button class="dbg-btn" onclick="dbgMaxInterval(0,-10)">間隔－10ms</button>
+        <button class="dbg-btn" onclick="dbgMaxInterval(0,10)">間隔＋10ms</button>
+      </div>
+      <div style="font-size:11px;color:#888;margin-bottom:4px;">2つMAX時 batch:<span id="dbgMaxBatch1">+0</span> 間隔:<span id="dbgMaxInterval1">+0ms</span></div>
+      <div class="dbg-row" style="margin-bottom:6px;">
+        <button class="dbg-btn" onclick="dbgMaxBatch(1,1)">batch＋1</button>
+        <button class="dbg-btn" onclick="dbgMaxBatch(1,-1)">batch－1</button>
+        <button class="dbg-btn" onclick="dbgMaxInterval(1,-10)">間隔－10ms</button>
+        <button class="dbg-btn" onclick="dbgMaxInterval(1,10)">間隔＋10ms</button>
+      </div>
+      <div style="font-size:11px;color:#888;margin-bottom:4px;">3つMAX時 batch:<span id="dbgMaxBatch2">+0</span> 間隔:<span id="dbgMaxInterval2">+0ms</span></div>
+      <div class="dbg-row">
+        <button class="dbg-btn" onclick="dbgMaxBatch(2,1)">batch＋1</button>
+        <button class="dbg-btn" onclick="dbgMaxBatch(2,-1)">batch－1</button>
+        <button class="dbg-btn" onclick="dbgMaxInterval(2,-10)">間隔－10ms</button>
+        <button class="dbg-btn" onclick="dbgMaxInterval(2,10)">間隔＋10ms</button>
+      </div>
+    </div>
+
+    <!-- 敵HP設定 -->
+    <div class="dbg-section">
+      <div class="dbg-label">敵の体力設定</div>
+      <div style="font-size:11px;color:#ff5533;margin-bottom:2px;">🐜蟻</div>
+      <div class="dbg-row" style="margin-bottom:4px;">
+        <span style="color:#ff5533;font-size:11px;">小<span id="dbgHp_ants">+0</span></span>
+        <button class="dbg-btn ant" onclick="dbgEnemyHp('ant_s',10)">＋10</button>
+        <button class="dbg-btn ant" onclick="dbgEnemyHp('ant_s',-10)">－10</button>
+        <span style="color:#ff5533;font-size:11px;">中<span id="dbgHp_antm">+0</span></span>
+        <button class="dbg-btn ant" onclick="dbgEnemyHp('ant_m',10)">＋10</button>
+        <button class="dbg-btn ant" onclick="dbgEnemyHp('ant_m',-10)">－10</button>
+        <span style="color:#ff5533;font-size:11px;">大<span id="dbgHp_antl">+0</span></span>
+        <button class="dbg-btn ant" onclick="dbgEnemyHp('ant_l',10)">＋10</button>
+        <button class="dbg-btn ant" onclick="dbgEnemyHp('ant_l',-10)">－10</button>
+      </div>
+      <div style="font-size:11px;color:#aa66ff;margin-bottom:2px;">🕷蜘蛛</div>
+      <div class="dbg-row" style="margin-bottom:4px;">
+        <span style="color:#aa66ff;font-size:11px;">小<span id="dbgHp_spiders">+0</span></span>
+        <button class="dbg-btn spider" onclick="dbgEnemyHp('spider_s',10)">＋10</button>
+        <button class="dbg-btn spider" onclick="dbgEnemyHp('spider_s',-10)">－10</button>
+        <span style="color:#aa66ff;font-size:11px;">中<span id="dbgHp_spiderm">+0</span></span>
+        <button class="dbg-btn spider" onclick="dbgEnemyHp('spider_m',10)">＋10</button>
+        <button class="dbg-btn spider" onclick="dbgEnemyHp('spider_m',-10)">－10</button>
+        <span style="color:#aa66ff;font-size:11px;">大<span id="dbgHp_spiderl">+0</span></span>
+        <button class="dbg-btn spider" onclick="dbgEnemyHp('spider_l',10)">＋10</button>
+        <button class="dbg-btn spider" onclick="dbgEnemyHp('spider_l',-10)">－10</button>
+      </div>
+      <div style="font-size:11px;color:#ffcc00;margin-bottom:2px;">🐝蜂</div>
+      <div class="dbg-row">
+        <span style="color:#ffcc00;font-size:11px;">小<span id="dbgHp_bees">+0</span></span>
+        <button class="dbg-btn bee" onclick="dbgEnemyHp('bee_s',10)">＋10</button>
+        <button class="dbg-btn bee" onclick="dbgEnemyHp('bee_s',-10)">－10</button>
+        <span style="color:#ffcc00;font-size:11px;">中<span id="dbgHp_beem">+0</span></span>
+        <button class="dbg-btn bee" onclick="dbgEnemyHp('bee_m',10)">＋10</button>
+        <button class="dbg-btn bee" onclick="dbgEnemyHp('bee_m',-10)">－10</button>
+        <span style="color:#ffcc00;font-size:11px;">大<span id="dbgHp_beel">+0</span></span>
+        <button class="dbg-btn bee" onclick="dbgEnemyHp('bee_l',10)">＋10</button>
+        <button class="dbg-btn bee" onclick="dbgEnemyHp('bee_l',-10)">－10</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="game.js"></script>
+
+  <!-- ATK/SPD の現在値をリアルタイム表示 -->
+  <script>
+    setInterval(() => {
+      if (typeof pl === 'undefined') return;
+      const a = document.getElementById('dbgAtk');
+      const s = document.getElementById('dbgSpd');
+      const b = document.getElementById('dbgBrs');
+      if (a) a.textContent = pl.atk;
+      if (s) s.textContent = pl.bspd;
+      if (b) b.textContent = pl.burst.toFixed(1);
+    }, 200);
+  </script>
+
+  <!-- スマホ：全画面 + 縦向きロック -->
+  <script>
+    function isMobile() {
+      return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    }
+
+    // チュートリアルページ管理
+    let tutPage = 1;
+
+    function tutorialTap() {
+      if (tutPage === 1) {
+        tutPage = 2;
+        document.getElementById('tutImg').src = 'assets/images/ui/tutorial.png';
+        document.getElementById('tutBtn').innerHTML = '▶︎&nbsp;&nbsp;Are you ready?&nbsp;&nbsp;◀︎';
+      } else {
+        startGame();
+      }
+    }
+
+    // ロゴボタンタップ → 背景・難易度を設定してチュートリアル表示
+    function startMobileGame(bgKey, difficulty) {
+      window.selectedBgKey  = bgKey     || 'bg';
+      window.selectedDifficulty = difficulty || 'HARD';
+      tutPage = 1;
+      document.getElementById('tutImg').src = 'assets/images/ui/tutorial02-a.png';
+      document.getElementById('tutBtn').innerHTML = '▶︎&nbsp;&nbsp;NEXT&nbsp;&nbsp;◀︎';
+      document.getElementById('fsOverlay').style.display = 'none';
+      document.getElementById('tutorialOverlay').style.display = 'flex';
+    }
+
+    // Are you ready? タップ → 全画面でゲーム開始
+    async function startGame() {
+      document.getElementById('tutorialOverlay').style.display = 'none';
+      // ゲームのポーズを解除
+      if (typeof paused !== 'undefined') paused = false;
+      if (typeof resume === 'function') resume();
+      // BGM 再生（うっすら）
+      const bgm = document.getElementById('bgm');
+      if (bgm) { bgm.volume = 0.07; bgm.play().catch(()=>{}); }
+      try {
+        const el = document.documentElement;
+        if (el.requestFullscreen)            await el.requestFullscreen();
+        else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
+      } catch(e) {}
+      try {
+        if (screen.orientation?.lock) await screen.orientation.lock('portrait');
+      } catch(e) {}
+    }
+
+    // サービスワーカー登録（PWA）
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/frontline-held/sw.js').catch(() => {});
+    }
+
+    // スマホのみ：ローディング画面を表示してアセット読み込み完了を待つ
+    if (isMobile()) {
+      if (typeof paused !== 'undefined') paused = true;
+      document.getElementById('loadingOverlay').style.display = 'flex';
+
+      const ldBar  = document.getElementById('ldBar');
+      const ldText = document.getElementById('ldText');
+      const checkLoad = setInterval(() => {
+        const t = (typeof toLoad !== 'undefined') ? toLoad : 0;
+        const l = (typeof loaded !== 'undefined') ? loaded : 0;
+        const pct = t > 0 ? Math.min(100, Math.round(l / t * 100)) : 0;
+        ldBar.style.width = pct + '%';
+        ldText.textContent = l + ' / ' + t;
+        if (t > 0 && l >= t) {
+          clearInterval(checkLoad);
+          document.getElementById('loadingOverlay').style.display = 'none';
+          document.getElementById('fsOverlay').style.display = 'flex';
+        }
+      }, 100);
+    }
+  </script>
+</body>
+</html>
