@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>EDF 訓練プログラム</title>
+<title>D3P 黙認 EDF 訓練プログラム</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=M+PLUS+1p:wght@800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -122,6 +122,7 @@ body::after {
   letter-spacing: 2px;
   color: #fff;
   line-height: 1.7;
+  white-space: nowrap;
 }
 .speech-sub {
   font-size: 11px;
@@ -245,7 +246,7 @@ body::after {
 
   <div class="header">
     <div class="header-label">EARTH DEFENSE FORCE</div>
-    <div class="header-title">EDF 訓練プログラム</div>
+    <div class="header-title">D3P 黙認 EDF 訓練プログラム</div>
     <div class="header-sub">TRAINING SYSTEM v1.0</div>
   </div>
 
@@ -270,7 +271,7 @@ body::after {
       <div class="training-num">TRAINING-01</div>
       <div class="training-info">
         <div class="training-name">回避訓練</div>
-        <div class="training-desc">巨大蟻を避けて突き進め！</div>
+        <div class="training-desc">迫り来る巨大生物を回避せよ！</div>
       </div>
       <div class="training-arrow">▶</div>
     </a>
@@ -303,6 +304,19 @@ body::after {
 </div>
 
 <script>
+// 吹き出しの文字を折り返さず、収まらない場合は縮小して1行に収める
+function fitTextNoWrap(el, maxWidth) {
+  if (!el) return;
+  let fontSize = parseFloat(getComputedStyle(el).fontSize);
+  while (el.scrollWidth > maxWidth && fontSize > 8) {
+    fontSize -= 0.5;
+    el.style.fontSize = fontSize + 'px';
+  }
+}
+window.addEventListener('load', () => {
+  fitTextNoWrap(document.querySelector('.speech-main'), 184);
+});
+
 // アクセスカウンター
 fetch('/api/counter', { method: 'POST' })
   .then(r => r.json())
