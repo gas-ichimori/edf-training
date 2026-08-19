@@ -50,6 +50,15 @@ body::after {
   width: 100%;
   text-align: center;
 }
+.header-d3p {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 5px;
+  color: #ffdd44;
+  text-shadow: 0 0 10px rgba(255,221,68,0.5);
+  margin-bottom: 4px;
+}
 .header-label {
   font-family: 'Orbitron', sans-serif;
   font-size: 10px;
@@ -222,7 +231,7 @@ body::after {
   min-width: 72px;
   text-align: center;
 }
-.training-info { flex: 1; }
+.training-info { flex: 1; min-width: 0; }
 .training-name {
   font-size: 16px;
   letter-spacing: 2px;
@@ -233,6 +242,8 @@ body::after {
   letter-spacing: 1px;
   color: rgba(136,255,85,0.5);
   margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .training-arrow {
   font-size: 18px;
@@ -245,9 +256,10 @@ body::after {
 <div id="main">
 
   <div class="header">
+    <div class="header-d3p">D3P 黙認</div>
     <div class="header-label">EARTH DEFENSE FORCE</div>
-    <div class="header-title">D3P 黙認 EDF 訓練プログラム</div>
-    <div class="header-sub">TRAINING SYSTEM v1.0</div>
+    <div class="header-title">EDF 訓練プログラム</div>
+    <div class="header-sub">TRAINING SYSTEM V1.0</div>
   </div>
 
   <img id="taisa-img" src="/taisa.png" alt="大佐">
@@ -304,17 +316,19 @@ body::after {
 </div>
 
 <script>
-// 吹き出しの文字を折り返さず、収まらない場合は縮小して1行に収める
+// 文字を折り返さず、収まらない場合は縮小して1行に収める
 function fitTextNoWrap(el, maxWidth) {
   if (!el) return;
+  const target = maxWidth || el.clientWidth;
   let fontSize = parseFloat(getComputedStyle(el).fontSize);
-  while (el.scrollWidth > maxWidth && fontSize > 8) {
+  while (el.scrollWidth > target && fontSize > 8) {
     fontSize -= 0.5;
     el.style.fontSize = fontSize + 'px';
   }
 }
 window.addEventListener('load', () => {
   fitTextNoWrap(document.querySelector('.speech-main'), 184);
+  document.querySelectorAll('.training-desc').forEach(el => fitTextNoWrap(el));
 });
 
 // アクセスカウンター
