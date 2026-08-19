@@ -124,16 +124,41 @@ body::after {
 }
 #screen-start > *:not(#start-bg) { position: relative; z-index: 1; }
 
-#logo-switcher {
-  position: relative; width: 200px; height: 80px;
+/* ===== 入隊選択メッセージ ===== */
+.select-msg {
+  font-size: 15px; font-weight: bold; color: #ffdd44;
+  text-shadow: 0 0 10px #ff8800, 0 0 20px #ff4400;
+  letter-spacing: 2px; text-align: center; padding: 0 12px;
 }
-#logo-switcher img {
-  position: absolute; top: 0; left: 0;
-  width: 100%; height: 100%; object-fit: contain;
-  opacity: 0; transition: opacity 0.6s ease;
-  filter: drop-shadow(0 2px 16px rgba(0,0,0,0.8));
+.select-msg-en {
+  display: block; margin-top: 6px;
+  font-size: 10px; letter-spacing: 2px; font-weight: normal;
+  color: rgba(255,221,68,0.7); text-shadow: none;
 }
-#logo-switcher img.active { opacity: 1; }
+
+/* ===== ロゴ3ボタン横並び ===== */
+.logo-btns {
+  display: flex; gap: 8px; align-items: center; justify-content: center;
+  width: 100%; padding: 0 4px;
+}
+.logo-btn {
+  background: none; border: none; cursor: pointer; padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  flex: 1; max-width: 135px;
+}
+.logo-btn:active { transform: scale(0.9); }
+.logo-btn img {
+  width: 100%; height: auto;
+  filter: drop-shadow(0 0 12px rgba(255,150,0,0.6));
+  animation: icon-pulse 1.2s ease-in-out infinite;
+  display: block;
+}
+.logo-btn:nth-child(2) img { animation-delay: 0.4s; }
+.logo-btn:nth-child(3) img { animation-delay: 0.8s; }
+@keyframes icon-pulse {
+  0%,100% { filter: drop-shadow(0 0 12px rgba(255,150,0,0.5)); transform: scale(1); }
+  50%     { filter: drop-shadow(0 0 34px rgba(255,210,0,1.0)); transform: scale(1.14); }
+}
 
 #top-title { text-align: center; }
 #top-title h1 {
@@ -167,23 +192,6 @@ body::after {
   display: block; font-family: 'Orbitron', sans-serif;
   font-size: 10px; letter-spacing: 3px; color: rgba(136,255,85,0.7);
   animation: blink 1.1s ease-in-out infinite; animation-delay: 0.05s;
-}
-#start-btn {
-  background: none; border: none; cursor: pointer; padding: 0;
-  filter: drop-shadow(0 0 16px rgba(136,255,85,0.6));
-  transition: transform 0.15s, filter 0.15s;
-}
-#start-btn img { width: 110px; height: 110px; object-fit: contain; }
-@keyframes btn-launch {
-  0%   { transform: scale(1); }
-  25%  { transform: scale(0.82); }
-  60%  { transform: scale(1.18); }
-  80%  { transform: scale(0.96); }
-  100% { transform: scale(1); }
-}
-#start-btn.launching {
-  animation: btn-launch 0.45s ease forwards;
-  pointer-events: none;
 }
 #top-copyright {
   position: absolute; bottom: 10px; left: 0; right: 0;
@@ -295,12 +303,6 @@ body::after {
 <div id="screen-start" class="screen active">
   <div id="start-bg"></div>
 
-  <div id="logo-switcher">
-    <img src="/logo3.png" alt="EDF 5" class="active">
-    <img src="/logo2.png" alt="EDF 6">
-    <img src="/logo1.png" alt="EDF 6.1">
-  </div>
-
   <div id="top-title">
     <h1>投げ返せ！EDF！</h1>
     <span class="sub-en">THROW IT BACK!</span>
@@ -312,13 +314,23 @@ body::after {
     <span class="top-desc-en">THROW IT BACK IN 5 SECONDS!</span>
   </div>
 
+  <div class="select-msg">貴殿の入隊したいアイコンを選択せよ！<span class="select-msg-en">SELECT THE ICON YOU WISH TO ENLIST WITH!</span></div>
+
   <div id="press-hint">
     <span class="hint-ja">▼ ボタンを押せ ▼</span>
   </div>
 
-  <button id="start-btn" aria-label="訓練開始">
-    <img src="/mark.png" alt="START">
-  </button>
+  <div class="logo-btns">
+    <button class="logo-btn" onclick="selectDifficulty(0.1)">
+      <img src="/logo1.png" alt="EDF 6.1×2">
+    </button>
+    <button class="logo-btn" onclick="selectDifficulty(0.25)">
+      <img src="/logo2.png" alt="EDF 6">
+    </button>
+    <button class="logo-btn" onclick="selectDifficulty(0.5)">
+      <img src="/logo3.png" alt="EDF 5">
+    </button>
+  </div>
 
   <div id="press-hint">
     <span class="hint-en">▲ PRESS THE BUTTON ▲</span>
@@ -374,9 +386,10 @@ body::after {
 </div>
 
 <script>
-const CLEAR_MIN  = 4.5;
-const CLEAR_MAX  = 5.5;
 const TARGET     = 5.0;
+let TOLERANCE    = 0.5;
+let CLEAR_MIN    = TARGET - TOLERANCE;
+let CLEAR_MAX    = TARGET + TOLERANCE;
 
 let state      = 'idle';
 let startTime  = null;
@@ -709,31 +722,16 @@ function addTap(id, fn) {
   el.addEventListener('touchstart', e => { e.preventDefault(); fn(); }, { passive: false });
 }
 
-// ===== LOGO SWITCHER =====
-(function() {
-  const logos = document.querySelectorAll('#logo-switcher img');
-  let current = 0;
-  setInterval(() => {
-    logos[current].classList.remove('active');
-    current = (current + 1) % logos.length;
-    logos[current].classList.add('active');
-  }, 2000);
-})();
-
-// ===== START BUTTON =====
-const startBtn = $('start-btn');
-function onStartPress() {
+// ===== DIFFICULTY SELECT =====
+function selectDifficulty(tolerance) {
   if (state !== 'idle') return;
+  TOLERANCE = tolerance;
+  CLEAR_MIN = TARGET - TOLERANCE;
+  CLEAR_MAX = TARGET + TOLERANCE;
   sndClick();
   if (window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance(''));
-  startBtn.classList.add('launching');
-  setTimeout(() => {
-    startBtn.classList.remove('launching');
-    startGame();
-  }, 450);
+  startGame();
 }
-startBtn.addEventListener('click', onStartPress);
-startBtn.addEventListener('touchend', e => { e.preventDefault(); onStartPress(); }, { passive: false });
 
 addTap('btn-throw', () => triggerThrow());
 
@@ -791,7 +789,7 @@ async function makeCertificate() {
   c.font='bold 30px sans-serif';
   c.fillText(cleared ? 'MISSION CLEAR' : 'MISSION FAILED', 202, 510);
   c.fillStyle='#aaa'; c.font='11px sans-serif';
-  c.fillText('目標: 5.000秒', 202, 545);
+  c.fillText(`目標: 5.000±${TOLERANCE.toFixed(2)}秒`, 202, 545);
 
   c.strokeStyle='#554422'; c.lineWidth=1;
   c.beginPath(); c.moveTo(28,625); c.lineTo(377,625); c.stroke();
@@ -807,7 +805,7 @@ async function makeCertificate() {
 }
 
 async function shareToX() {
-  const tweetText = `TGS2026 D3Pブース 5HALL 05-C03の最前線基地へ応援求む！待機中の訓練システム"5秒感覚訓練"に挑戦！${resultSec.toFixed(3)}秒達成！（目標5.000秒） #EDF #D3P #TGS2026 #地球防衛軍`;
+  const tweetText = `TGS2026 D3Pブース 5HALL 05-C03の最前線基地へ応援求む！待機中の訓練システム"5秒感覚訓練"に挑戦！${resultSec.toFixed(3)}秒達成！（目標5.000±${TOLERANCE.toFixed(2)}秒） #EDF #D3P #TGS2026 #地球防衛軍`;
   const canvas = await makeCertificate();
   canvas.toBlob(async (blob) => {
     const file = new File([blob], 'edf_certificate.png', { type:'image/png' });
