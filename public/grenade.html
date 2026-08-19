@@ -233,8 +233,29 @@ body::after {
 /* ===== RESULT SCREEN ===== */
 #screen-result { background:url('/bg.png') center center/cover no-repeat; justify-content:flex-end; }
 #screen-result::before { content:''; position:absolute; inset:0; background:rgba(0,0,0,0.48); }
+#screen-result { --ro-taisa-h: clamp(320px, 82vh, 620px); }
 #res-taisa { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:center; align-items:flex-end; z-index:1; }
-#res-taisa img { max-height:82vh; max-width:95vw; object-fit:contain; filter:drop-shadow(0 4px 32px rgba(0,0,0,0.7)); }
+#res-taisa img { height:var(--ro-taisa-h); max-width:95vw; object-fit:contain; filter:drop-shadow(0 4px 32px rgba(0,0,0,0.7)); }
+.ro-bubble {
+  position: absolute;
+  bottom: calc(var(--ro-taisa-h) + 10px);
+  left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  border: 2px solid rgba(136,255,85,0.6);
+  border-radius: 12px;
+  padding: 12px 18px;
+  max-width: 240px;
+  text-align: center;
+  z-index: 3;
+}
+.ro-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -12px; left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(136,255,85,0.6);
+}
 #res-content {
   position:relative; z-index:2; width:100%; padding:0 20px 40px;
   display:flex; flex-direction:column; align-items:flex-end; gap:14px;
@@ -254,8 +275,8 @@ body::after {
 #res-box.fail .res-time { color:#ff4444; text-shadow:0 0 18px rgba(255,50,50,0.65); }
 .res-unit { font-size:15px; color:rgba(255,90,40,0.6); }
 #res-diff { font-size:13px; letter-spacing:2px; margin-top:4px; color:rgba(255,255,255,0.45); }
-#res-msg { font-size:16px; letter-spacing:2px; color:#fff; text-align:center;
-           line-height:1.85; white-space:pre-line; text-shadow:0 2px 8px rgba(0,0,0,0.85); min-height:56px; }
+#res-msg { font-size:15px; letter-spacing:1px; color:#fff; text-align:center;
+           line-height:1.6; white-space:pre; min-height:20px; }
 .res-btns { display:flex; flex-direction:column; gap:10px; width:100%; }
 .res-btn { font-family:'M PLUS 1p',sans-serif; font-weight:800; font-size:15px; letter-spacing:3px;
            padding:16px; border-radius:6px; cursor:pointer; transition:transform 0.1s; }
@@ -334,6 +355,7 @@ body::after {
 <!-- ===== RESULT ===== -->
 <div id="screen-result" class="screen">
   <div id="res-taisa"><img src="/taisa.png" alt="大佐"></div>
+  <div class="ro-bubble"><div id="res-msg"></div></div>
   <div id="res-content">
     <div id="res-box">
       <div class="res-label" id="res-label">YOUR TIME</div>
@@ -343,7 +365,6 @@ body::after {
       </div>
       <div id="res-diff"></div>
     </div>
-    <div id="res-msg"></div>
     <div class="res-btns">
       <button class="res-btn btn-share" id="btn-share"><span class="res-btn-label">証明書を発行し、共有する</span><span class="res-btn-en">Issue Certificate and Share</span><span class="res-btn-x">▶︎X（旧Twitter）へ投稿</span></button>
       <button class="res-btn btn-retry" id="btn-retry"><span class="res-btn-label">引き続き訓練を行う</span><span class="res-btn-en">Continue the Training</span></button>
@@ -460,6 +481,9 @@ function speak(text) {
 
 /* ===== TYPEWRITER ===== */
 function typeMsg(el, text, cb) {
+  el.style.fontSize = '';
+  el.textContent = text;
+  fitTextNoWrap(el);
   el.textContent = ''; let i = 0;
   const iv = setInterval(() => {
     el.textContent += text[i++];
