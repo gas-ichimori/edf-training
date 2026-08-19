@@ -446,7 +446,7 @@ function spawnAnt() {
   const margin = ANT_SIZE;
   const x = margin + Math.random() * (W - margin * 2);
   const y = margin + Math.random() * (H - margin * 2);
-  ants.push({ x, y, life: 1500 + Math.random() * 500, born: performance.now() });
+  ants.push({ x, y, life: 1500 + Math.random() * 500, born: performance.now(), flip: Math.random() < 0.5 });
 }
 
 function getSpawnInterval() {
@@ -499,7 +499,15 @@ function draw(now) {
     const alpha = age > a.life - 300 ? (a.life - age) / 300 : 1;
     ctx.globalAlpha = alpha;
     if (img) {
-      ctx.drawImage(img, a.x - ANT_SIZE/2, a.y - ANT_SIZE/2, ANT_SIZE, ANT_SIZE);
+      if (a.flip) {
+        ctx.save();
+        ctx.translate(a.x, a.y);
+        ctx.scale(-1, 1);
+        ctx.drawImage(img, -ANT_SIZE/2, -ANT_SIZE/2, ANT_SIZE, ANT_SIZE);
+        ctx.restore();
+      } else {
+        ctx.drawImage(img, a.x - ANT_SIZE/2, a.y - ANT_SIZE/2, ANT_SIZE, ANT_SIZE);
+      }
     } else {
       ctx.fillStyle = '#88ff55';
       ctx.fillRect(a.x - 20, a.y - 20, 40, 40);
