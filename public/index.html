@@ -336,15 +336,23 @@ function fitTextNoWrap(el, maxWidth) {
   }
 }
 // 大佐の身長を実測して、ヘッダー・吹き出し・訓練生カウンターが重ならないよう調整
+// （大佐と吹き出しは画面下端からの距離(--taisa-h)を基準に位置が決まるため、
+//   カウンター上端・ヘッダー下端それぞれを基準に許容範囲を逆算する）
 function fitTaisaHeight() {
   const header = document.querySelector('.header');
   const counterBox = document.getElementById('counter-box');
   const bubble = document.querySelector('.speech-bubble');
   if (!header || !counterBox || !bubble) return;
+  const vh = window.innerHeight;
   const headerBottom = header.getBoundingClientRect().bottom;
   const counterTop = counterBox.getBoundingClientRect().top;
-  const available = counterTop - headerBottom - bubble.offsetHeight - 16 - 10 - 12;
-  const h = Math.max(220, Math.min(available, 560));
+  const bubbleH = bubble.offsetHeight;
+
+  const minH = (vh - counterTop) + 24;             // 吹き出し下端をカウンター上端より上にするための最小値
+  const maxH = (vh - headerBottom) - bubbleH - 26;  // 吹き出し上端をヘッダー下端より下にするための最大値
+
+  let h = maxH >= minH ? maxH : minH;
+  h = Math.max(220, Math.min(h, 560));
   document.documentElement.style.setProperty('--taisa-h', h + 'px');
 }
 window.addEventListener('load', () => {
