@@ -254,14 +254,17 @@ body::after {
 #res-box.fail .res-time { color:#ff4444; text-shadow:0 0 18px rgba(255,50,50,0.65); }
 .res-unit { font-size:15px; color:rgba(255,90,40,0.6); }
 #res-diff { font-size:13px; letter-spacing:2px; margin-top:4px; color:rgba(255,255,255,0.45); }
-#res-msg { font-size:16px; letter-spacing:2px; color:#fff; text-align:right;
+#res-msg { font-size:16px; letter-spacing:2px; color:#fff; text-align:center;
            line-height:1.85; white-space:pre-line; text-shadow:0 2px 8px rgba(0,0,0,0.85); min-height:56px; }
 .res-btns { display:flex; flex-direction:column; gap:10px; width:100%; }
 .res-btn { font-family:'M PLUS 1p',sans-serif; font-weight:800; font-size:15px; letter-spacing:3px;
            padding:16px; border-radius:6px; cursor:pointer; transition:transform 0.1s; }
 .res-btn:active { transform:scale(0.97); }
-.btn-share { background:rgba(136,255,85,0.14); border:2px solid rgba(136,255,85,0.7); color:#88ff55; }
-.btn-retry { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.2); color:#aaa; }
+.res-btn-en { display:block; font-size:9px; opacity:0.75; letter-spacing:1px; margin-top:3px; }
+.res-btn-x  { display:block; font-size:11px; font-weight:bold; margin-top:5px; }
+.res-btn-label { display:block; white-space:nowrap; overflow:hidden; }
+.btn-share { background:rgba(20,60,160,0.5); border:2px solid #5599ff; color:#aaddff; }
+.btn-retry { background:rgba(136,255,85,0.15); border:1px solid rgba(136,255,85,0.7); color:#88ff55; }
 .btn-hub   { background:transparent; border:1px solid rgba(255,255,255,0.14); color:#666; }
 </style>
 </head>
@@ -342,9 +345,9 @@ body::after {
     </div>
     <div id="res-msg"></div>
     <div class="res-btns">
-      <button class="res-btn btn-share" id="btn-share">次の任務に就く為、証明書を発行<br><span style="font-size:9px;opacity:0.75;letter-spacing:1px;">Next Mission Certificate Issued</span></button>
-      <button class="res-btn btn-retry" id="btn-retry">引き続き訓練を行う</button>
-      <button class="res-btn btn-hub"   id="btn-hub">別の訓練をする</button>
+      <button class="res-btn btn-share" id="btn-share"><span class="res-btn-label">証明書を発行し、共有する</span><span class="res-btn-en">Issue Certificate and Share</span><span class="res-btn-x">▶︎X（旧Twitter）へ投稿</span></button>
+      <button class="res-btn btn-retry" id="btn-retry"><span class="res-btn-label">引き続き訓練を行う</span><span class="res-btn-en">Continue the Training</span></button>
+      <button class="res-btn btn-hub"   id="btn-hub"><span class="res-btn-label">別の訓練をする</span><span class="res-btn-en">Choose Another Training</span></button>
     </div>
   </div>
 </div>
@@ -463,6 +466,19 @@ function typeMsg(el, text, cb) {
     if (i >= text.length) { clearInterval(iv); if (cb) cb(); }
   }, 58);
 }
+
+// 文字を折り返さず、収まらない場合は縮小して1行に収める
+function fitTextNoWrap(el) {
+  if (!el) return;
+  let fontSize = parseFloat(getComputedStyle(el).fontSize);
+  while (el.scrollWidth > el.clientWidth && fontSize > 8) {
+    fontSize -= 0.5;
+    el.style.fontSize = fontSize + 'px';
+  }
+}
+window.addEventListener('load', () => {
+  document.querySelectorAll('.res-btn-label').forEach(fitTextNoWrap);
+});
 
 /* ===== EXPLOSION (画像スプライトアニメ) ===== */
 const EXP_FRAMES = ['/explosion_frame1.png', '/explosion_frame2.png', '/explosion_frame3.png'];
