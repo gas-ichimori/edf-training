@@ -783,7 +783,7 @@ async function makeCertificate() {
 }
 
 async function shareToX() {
-  const tweetText = `TGS2026 D3Pブース ${'◯◯'} の最前線基地へ応援求む！待機中の訓練システム"5秒感覚訓練"に挑戦！${resultSec.toFixed(3)}秒達成！（目標5.000秒） #EDF #D3P #TGS2026 #地球防衛軍`;
+  const tweetText = `TGS2026 D3Pブース 5HALL 05-C03の最前線基地へ応援求む！待機中の訓練システム"5秒感覚訓練"に挑戦！${resultSec.toFixed(3)}秒達成！（目標5.000秒） #EDF #D3P #TGS2026 #地球防衛軍`;
   const canvas = await makeCertificate();
   canvas.toBlob(async (blob) => {
     const file = new File([blob], 'edf_certificate.png', { type:'image/png' });
