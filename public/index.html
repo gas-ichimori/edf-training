@@ -335,10 +335,24 @@ function fitTextNoWrap(el, maxWidth) {
     el.style.fontSize = fontSize + 'px';
   }
 }
+// 大佐の身長を実測して、ヘッダー・吹き出し・訓練生カウンターが重ならないよう調整
+function fitTaisaHeight() {
+  const header = document.querySelector('.header');
+  const counterBox = document.getElementById('counter-box');
+  const bubble = document.querySelector('.speech-bubble');
+  if (!header || !counterBox || !bubble) return;
+  const headerBottom = header.getBoundingClientRect().bottom;
+  const counterTop = counterBox.getBoundingClientRect().top;
+  const available = counterTop - headerBottom - bubble.offsetHeight - 16 - 10 - 12;
+  const h = Math.max(220, Math.min(available, 560));
+  document.documentElement.style.setProperty('--taisa-h', h + 'px');
+}
 window.addEventListener('load', () => {
   fitTextNoWrap(document.querySelector('.speech-main'), 184);
   document.querySelectorAll('.training-desc').forEach(el => fitTextNoWrap(el));
+  fitTaisaHeight();
 });
+window.addEventListener('resize', fitTaisaHeight);
 
 // アクセスカウンター
 fetch('/api/counter', { method: 'POST' })
