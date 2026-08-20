@@ -250,6 +250,8 @@ body::after {
   letter-spacing: 1px;
   color: rgba(255,221,68,0.7);
   margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .training-arrow {
   font-size: 18px;
@@ -359,6 +361,7 @@ function fitTaisaHeight() {
 window.addEventListener('load', () => {
   fitTextNoWrap(document.querySelector('.speech-main'), 184);
   document.querySelectorAll('.training-desc').forEach(el => fitTextNoWrap(el));
+  document.querySelectorAll('.training-time').forEach(el => fitTextNoWrap(el));
   fitTaisaHeight();
 });
 window.addEventListener('resize', fitTaisaHeight);
