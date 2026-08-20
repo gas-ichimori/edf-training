@@ -187,158 +187,88 @@ html, body {
   background: rgba(0,0,0,0.48);
   z-index: 0;
 }
-/* 指揮官は絶対配置で画面下に固定（テキスト・ボタンの後ろ） */
-#go-commander {
-  position: absolute !important;
-  bottom: 0; left: 0; right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  z-index: 1 !important;
+#gameover-screen { --ro-taisa-h: clamp(300px, 76dvh, 580px); }
+#result-taisa {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  display: flex; justify-content: center; align-items: flex-end;
+  z-index: 1;
 }
-#go-commander img {
-  max-height: 82vh;
-  max-width: 95vw;
+#result-taisa img {
+  height: var(--ro-taisa-h); max-width: 95vw;
   object-fit: contain;
   filter: drop-shadow(0 4px 32px rgba(0,0,0,0.7));
 }
-/* テキスト・フッターは指揮官の上に重なる */
-#go-message {
-  position: relative; z-index: 2;
-  padding: 16px 30px 0;
-  text-align: center;
-  font-size: 20px; letter-spacing: 3px; color: #dff0d0;
-  line-height: 1.8;
-  text-shadow: 0 1px 12px rgba(0,0,0,1), 0 0 4px rgba(0,0,0,1);
-  min-height: 80px;
-}
-#go-footer {
-  position: relative; z-index: 2;
-  width: 100%;
-  padding: 14px 30px 44px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-#go-score-text {
-  font-size: 16px; letter-spacing: 4px; color: #c8a832;
-  text-shadow: 0 0 10px rgba(200,168,50,0.5), 0 1px 6px rgba(0,0,0,1);
-}
-.go-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  position: relative;
-  transition: transform 0.1s;
-  display: block;
-}
-@keyframes go-btn-press {
-  0%   { transform: scale(1); }
-  30%  { transform: scale(0.86); }
-  65%  { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
-@keyframes go-btn-glow-green {
-  0%,100% { filter: drop-shadow(0 0 6px rgba(136,255,85,0.5)); }
-  50%     { filter: drop-shadow(0 0 22px rgba(136,255,85,1)); }
-}
-@keyframes go-btn-glow-gold {
-  0%,100% { filter: drop-shadow(0 0 6px rgba(200,168,50,0.5)); }
-  50%     { filter: drop-shadow(0 0 22px rgba(200,168,50,1)); }
-}
-.go-btn.pressing { animation: go-btn-press 0.32s ease forwards; }
-#btn-volunteer.attention { animation: go-btn-glow-green 0.4s ease 3; }
-#btn-share.attention     { animation: go-btn-glow-gold  0.4s ease 3; }
-.go-btn img { display: block; width: 280px; }
-.go-btn-text {
+.ro-bubble {
   position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  white-space: nowrap;
-  font-family: 'M PLUS 1p', sans-serif;
-  font-weight: 800;
-  font-size: 15px;
-  letter-spacing: 3px;
-  pointer-events: none;
+  bottom: calc(var(--ro-taisa-h) + 10px);
+  left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  border: 2px solid rgba(136,255,85,0.6);
+  border-radius: 12px;
+  padding: 12px 18px;
+  max-width: 240px;
+  text-align: center;
+  z-index: 3;
 }
-#btn-volunteer .go-btn-text {
-  color: #dff0d0;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.9);
+.ro-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -12px; left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(136,255,85,0.6);
 }
-#btn-share .go-btn-text {
-  color: #f0e0a0;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.9);
+#result-content {
+  position: relative; z-index: 2;
+  width: 100%; padding: 0 20px 40px;
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
 }
-#go-btns {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  align-items: center;
+#result-score-box {
+  background: rgba(0,0,0,0.8);
+  border: 2px solid rgba(136,255,85,0.5);
+  border-radius: 8px; padding: 14px 20px; text-align: center; width: 100%;
 }
-.go-result-btn {
+.result-score-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10px; letter-spacing: 4px; color: rgba(136,255,85,0.6);
+}
+.result-score-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 44px; font-weight: 900; color: #88ff55;
+  text-shadow: 0 0 20px rgba(136,255,85,0.6);
+}
+.result-score-unit { font-size: 16px; color: rgba(136,255,85,0.6); }
+#result-message {
+  font-size: 15px; letter-spacing: 1px; color: #fff;
+  text-align: center; line-height: 1.6;
+  white-space: pre;
+  min-height: 20px;
+}
+.result-btn-en { display:block; font-size:9px; opacity:0.75; letter-spacing:1px; margin-top:3px; }
+.result-btn-x  { display:block; font-size:11px; font-weight:bold; margin-top:5px; }
+.result-btn-label { display:block; white-space:nowrap; overflow:hidden; }
+.result-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.result-btn {
   font-family: 'M PLUS 1p', sans-serif; font-weight: 800;
   font-size: 15px; letter-spacing: 3px;
   padding: 16px; border-radius: 6px; cursor: pointer;
-  width: 100%;
   transition: transform 0.1s;
 }
-.go-result-btn:active { transform: scale(0.97); }
-.go-result-btn.pressing { animation: go-btn-press 0.32s ease forwards; }
-#btn-share.go-result-btn {
+.result-btn:active { transform: scale(0.97); }
+.btn-share-result {
+  background: rgba(20,60,160,0.5);
+  border: 2px solid #5599ff;
+  color: #aaddff;
+}
+.btn-retry-result {
   background: rgba(136,255,85,0.15);
-  border: 2px solid rgba(136,255,85,0.7);
+  border: 1px solid rgba(136,255,85,0.7);
   color: #88ff55;
 }
-#btn-retry.go-result-btn {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #aaa;
-}
-#btn-hub.go-result-btn {
+.btn-hub-result {
   background: transparent;
   border: 1px solid rgba(255,255,255,0.15);
   color: #666;
-}
-/* YES/NO確認ダイアログ */
-#go-nav-confirm {
-  position: absolute !important;
-  top: 0; left: 0; right: 0;
-  padding: 28px 24px 22px;
-  background: rgba(0,4,0,0.94);
-  border-bottom: 2px solid rgba(136,255,85,0.6);
-  text-align: center;
-  z-index: 5 !important;
-  display: none;
-}
-#go-nav-confirm p {
-  font-size: 15px; letter-spacing: 2px; color: #dff0d0;
-  line-height: 1.8; margin-bottom: 18px;
-}
-#go-yesno {
-  display: flex; gap: 24px; justify-content: center;
-}
-.go-yn-btn {
-  font-family: 'M PLUS 1p', sans-serif; font-weight: 800;
-  font-size: 22px; letter-spacing: 8px;
-  padding: 12px 38px; border-radius: 6px;
-  cursor: pointer; transition: transform 0.1s;
-}
-.go-yn-btn:active { transform: scale(0.90); }
-.go-yn-btn.pressing { animation: go-btn-press 0.32s ease forwards; }
-#btn-yes {
-  background: rgba(136,255,85,0.12);
-  border: 2px solid rgba(136,255,85,0.8);
-  color: #88ff55;
-  text-shadow: 0 0 10px rgba(136,255,85,0.5);
-}
-#btn-no {
-  background: rgba(255,80,80,0.1);
-  border: 2px solid rgba(255,80,80,0.7);
-  color: #ff6666;
-  text-shadow: 0 0 10px rgba(255,80,80,0.5);
 }
 </style>
 </head>
@@ -392,16 +322,17 @@ html, body {
 
 <!-- GAME OVER SCREEN -->
 <div id="gameover-screen">
-  <div id="go-commander">
-    <img src="/taisa.png" alt="大佐" id="go-commander-img">
-  </div>
-  <div id="go-message"></div>
-  <div id="go-footer">
-    <div id="go-score-text"></div>
-    <div id="go-btns">
-      <button class="go-btn go-result-btn" id="btn-share">仲間に広める</button>
-      <button class="go-btn go-result-btn" id="btn-retry">もう一度訓練する</button>
-      <button class="go-btn go-result-btn" id="btn-hub">別の訓練をする</button>
+  <div id="result-taisa"><img src="/taisa.png" alt="大佐"></div>
+  <div class="ro-bubble"><div id="result-message"></div></div>
+  <div id="result-content">
+    <div id="result-score-box">
+      <div class="result-score-label">SCORE</div>
+      <div><span class="result-score-num" id="result-num">0</span><span class="result-score-unit"> 点</span></div>
+    </div>
+    <div class="result-btns">
+      <button class="result-btn btn-share-result" id="btn-share"><span class="result-btn-label">証明書を発行し、共有する</span><span class="result-btn-en">Issue Certificate and Share</span><span class="result-btn-x">▶︎X（旧Twitter）へ投稿</span></button>
+      <button class="result-btn btn-retry-result" id="btn-retry"><span class="result-btn-label">引き続き訓練を行う</span><span class="result-btn-en">Continue the Training</span></button>
+      <button class="result-btn btn-hub-result" id="btn-hub"><span class="result-btn-label">別の訓練をする</span><span class="result-btn-en">Choose Another Training</span></button>
     </div>
   </div>
 </div>
@@ -836,7 +767,7 @@ function triggerGameOver() {
   setTimeout(() => {
     cancelAnimationFrame(animId);
     $('game-screen').style.display = 'none';
-    showGameOverScreen();
+    showResult();
   }, 2800);
 }
 
@@ -925,42 +856,52 @@ function updateHUD() {
   $('hud-time').textContent = `${mm}:${ss}`;
 }
 
-// ===== GAME OVER SCREEN =====
-const GO_MESSAGES = [
-  { text: 'こんなコトも出来ないのか！\n知人・友人にも広めて鍛えておけ！',
-    speech: 'こんなことも出来ないのか！ちじん・ゆうじんにも広めて、きたえておけ！' },
-  { text: 'こんなコトも出来ないのか！\n貴様ら、もっと鍛え直せ！',
-    speech: 'こんなことも出来ないのか！きさまら、もっときたえなおせ！' },
-  { text: 'まだまだだな…\n仲間を呼んで鍛えてこい！',
-    speech: 'まだまだだな・・・なかまをよんで、きたえてこい！' },
-];
-
-function showGameOverScreen() {
-  const msgObj = GO_MESSAGES[Math.floor(Math.random() * GO_MESSAGES.length)];
-  $('go-message').textContent = '';
-  $('go-score-text').textContent = `SCORE: ${score} — SURVIVAL: ${Math.floor(elapsed)}s`;
-  $('gameover-screen').style.display = 'flex';
-
-  const speechText = msgObj.speech || msgObj.text.replace(/\n/g, '。');
-  typeMessage(msgObj.text, () => {
-    speakMessage(speechText);
-  });
-}
-
-function typeMessage(text, onDone) {
-  const el = $('go-message');
+// ===== GAME OVER / RESULT SCREEN =====
+// タイプライター表示
+function typeText(el, text, speed = 40) {
   el.textContent = '';
   let i = 0;
-  const interval = setInterval(() => {
-    if (i < text.length) {
-      const ch = text[i++];
-      el.textContent += ch;
-      if (ch !== '\n' && ch !== ' ') playTypeClick();
-    } else {
-      clearInterval(interval);
-      if (onDone) onDone();
-    }
-  }, 60);
+  (function step() {
+    if (i <= text.length) { el.textContent = text.slice(0, i); i++; setTimeout(step, speed); }
+  })();
+}
+// 文字を折り返さず、収まらない場合は縮小して1行に収める
+function fitTextNoWrap(el) {
+  if (!el) return;
+  let fontSize = parseFloat(getComputedStyle(el).fontSize);
+  while (el.scrollWidth > el.clientWidth && fontSize > 8) {
+    fontSize -= 0.5;
+    el.style.fontSize = fontSize + 'px';
+  }
+}
+window.addEventListener('load', () => {
+  document.querySelectorAll('.result-btn-label').forEach(fitTextNoWrap);
+});
+
+// 吹き出し用: 完成テキストで先にサイズを確定させてからタイプライター表示する
+function typeTextFit(el, text, speed = 40) {
+  if (!el) return;
+  el.style.fontSize = '';
+  el.textContent = text;
+  fitTextNoWrap(el);
+  typeText(el, text, speed);
+}
+
+const RESULT_MESSAGES = [
+  { text: sec => `SCORE ${score}点 / 生存 ${sec}秒\nこんなコトも出来ないのか！\n知人・友人にも広めて鍛えておけ！`,
+    speech: sec => `スコア${score}点、生存${sec}秒。こんなことも出来ないのか！ちじん・ゆうじんにも広めて、きたえておけ！` },
+  { text: sec => `SCORE ${score}点 / 生存 ${sec}秒\nまだまだだな…\n仲間を呼んで鍛えてこい！`,
+    speech: sec => `スコア${score}点、生存${sec}秒。まだまだだな・・・なかまをよんで、きたえてこい！` },
+];
+
+function showResult() {
+  const sec = Math.floor(elapsed);
+  $('result-num').textContent = score;
+  $('gameover-screen').style.display = 'flex';
+
+  const msgObj = RESULT_MESSAGES[Math.floor(Math.random() * RESULT_MESSAGES.length)];
+  typeTextFit($('result-message'), msgObj.text(sec));
+  speakMessage(msgObj.speech(sec));
 }
 
 function speakMessage(text) {
@@ -1033,46 +974,96 @@ window.addEventListener('resize', () => {
   resizeTimer = setTimeout(resize, 150);
 });
 
-function pressBtn(btn, onDone) {
-  btn.classList.remove('pressing', 'attention');
-  void btn.offsetWidth;
-  btn.classList.add('pressing');
-
-  let called = false;
-  function proceed() {
-    if (called) return; called = true;
-    btn.classList.remove('pressing', 'attention');
-    if (onDone) onDone();
-  }
-
-  // animationend で進む（iOS未発火のため 1800ms フォールバック）
-  btn.addEventListener('animationend', function onPressEnd(e) {
-    if (e.animationName !== 'go-btn-press') return;
-    btn.removeEventListener('animationend', onPressEnd);
-    btn.classList.remove('pressing');
-    btn.classList.add('attention');
-    btn.addEventListener('animationend', function onAttnEnd(e) {
-      if (e.animationName.indexOf('glow') === -1) return;
-      btn.removeEventListener('animationend', onAttnEnd);
-      proceed();
-    });
-    setTimeout(proceed, 1500); // attention フォールバック
+// ===== CERTIFICATE & SHARE =====
+function loadImage(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
   });
-  setTimeout(proceed, 1800); // press フォールバック
+}
+
+async function makeCertificate() {
+  const [certBg, edfIcon, countFrame, stamp] = await Promise.all([
+    loadImage('/frontline-held/assets/images/cert_bg.png'),
+    loadImage('/frontline-held/assets/images/edf_icon.png'),
+    loadImage('/frontline-held/assets/images/cert_count_frame.png'),
+    loadImage('/frontline-held/assets/images/cert_stamp.png'),
+  ]);
+
+  const cc = document.createElement('canvas');
+  cc.width = 405; cc.height = 720;
+  const c = cc.getContext('2d');
+  c.fillStyle='#07070f'; c.fillRect(0,0,405,720);
+  if (certBg) c.drawImage(certBg, 0, 0, 405, 720);
+  c.textAlign='center'; c.textBaseline='middle';
+
+  c.fillStyle='#ffdd44'; c.font='bold 20px sans-serif';
+  c.fillText('地球防衛軍 作戦報告書', 202, 44);
+  c.fillStyle='#aa8833'; c.font='10px sans-serif';
+  c.fillText('EARTH DEFENSE FORCE  MISSION REPORT', 202, 64);
+  c.strokeStyle='#554422'; c.lineWidth=1;
+  c.beginPath(); c.moveTo(28,76); c.lineTo(377,76); c.stroke();
+
+  if (edfIcon) c.drawImage(edfIcon, 202-70, 82, 140, 109);
+
+  c.fillStyle='#88ff88'; c.font='bold 14px monospace';
+  c.fillText('♟ EDF-007', 202, 205);
+  c.fillStyle='#888'; c.font='11px sans-serif';
+  c.fillText(`訓練種別: 回避訓練（旧）`, 202, 223);
+  c.strokeStyle='#332211'; c.lineWidth=1;
+  c.beginPath(); c.moveTo(28,235); c.lineTo(377,235); c.stroke();
+
+  c.fillStyle='#ffaa44'; c.font='bold 13px sans-serif';
+  c.fillText('記録スコア', 202, 253);
+  if (countFrame) c.drawImage(countFrame, 12, 261, 381, 152);
+  c.fillStyle='#ffffff'; c.font='bold 36px monospace';
+  c.fillText(`${score}点`, 202, 325);
+  c.fillStyle='#cccccc'; c.font='bold 16px monospace';
+  c.fillText(`生存 ${Math.floor(elapsed)}秒`, 202, 355);
+
+  c.strokeStyle='#554422'; c.lineWidth=1;
+  c.beginPath(); c.moveTo(28,421); c.lineTo(377,421); c.stroke();
+
+  c.fillStyle='#88ff88'; c.font='bold 30px sans-serif';
+  c.fillText('TRAINING COMPLETE', 202, 510);
+
+  c.strokeStyle='#554422'; c.lineWidth=1;
+  c.beginPath(); c.moveTo(28,625); c.lineTo(377,625); c.stroke();
+
+  if (stamp) { c.save(); c.globalAlpha=0.82; c.drawImage(stamp, 202-48, 621, 96, 96); c.restore(); }
+
+  c.fillStyle='#665522'; c.font='10px sans-serif';
+  c.fillText('地球防衛軍 作戦司令部 認定  /  EDF OPERATIONS CERTIFIED', 202, 683);
+  c.fillStyle='#2a2a3a'; c.font='10px sans-serif';
+  c.fillText('#EDF  #D3P  #TGS2026', 202, 699);
+
+  return cc;
+}
+
+async function shareToX() {
+  const tweetText = `TGS2026 D3Pブース 5HALL 05-C03の最前線基地へ応援求む！待機中の訓練システム"回避訓練（旧）"に挑戦！SCORE: ${score}点 生存${Math.floor(elapsed)}秒 達成！ #EDF #D3P #TGS2026 #地球防衛軍`;
+  const canvas = await makeCertificate();
+  canvas.toBlob(async (blob) => {
+    const file = new File([blob], 'edf_certificate.png', { type:'image/png' });
+    if (navigator.canShare?.({ files:[file] })) {
+      try { await navigator.share({ text:tweetText, files:[file] }); return; } catch(e) {}
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href=url; a.download='edf_certificate.png'; a.click();
+    URL.revokeObjectURL(url);
+    setTimeout(() => {
+      window.open('https://x.com/intent/tweet?text='+encodeURIComponent(tweetText), '_blank');
+    }, 600);
+  }, 'image/png');
 }
 
 // ===== SHARE BUTTON =====
-$('btn-share').addEventListener('click', function() {
+$('btn-share').addEventListener('click', async () => {
   playShareSound();
-  pressBtn(this, async () => {
-    if (!navigator.share) { alert('このブラウザはシェア機能に対応していません'); return; }
-    try {
-      await navigator.share({
-        title: 'EDF訓練',
-        text: `TGS2026 D3P ブース番号：◯◯ で地球防衛軍の訓練中！集合しろ！SCORE: ${score}点 生存: ${Math.floor(elapsed)}秒 #EDF訓練 #TGS2026`
-      });
-    } catch(e) {}
-  });
+  await shareToX();
 });
 
 $('btn-retry').addEventListener('click', () => {
