@@ -1,4 +1,4 @@
-const CACHE_NAME = 'edf-training-v4';
+const CACHE_NAME = 'edf-training-v5';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
